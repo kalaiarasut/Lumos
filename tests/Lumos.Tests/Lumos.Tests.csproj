@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
@@ -12,5 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\\..\\src\\Lumos\\Lumos.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System.IO" />
   </ItemGroup>
 </Project>

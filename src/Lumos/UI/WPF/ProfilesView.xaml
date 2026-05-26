@@ -1,0 +1,173 @@
+<UserControl x:Class="Lumos.UI.WPF.ProfilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UserControl.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource FadeInSlideUpAnimation}" />
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <UserControl.Resources>
+        <!-- Modern Toggle Switch Style -->
+        <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid Background="Transparent" Cursor="Hand">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <ContentPresenter Grid.Column="0" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            
+                            <Border x:Name="border" Grid.Column="1" Width="44" Height="24" CornerRadius="12" Background="{StaticResource BrushBorder}" VerticalAlignment="Center">
+                                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="White" HorizontalAlignment="Left" Margin="2" />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource BrushPrimary}" />
+                                <Setter TargetName="ellipse" Property="HorizontalAlignment" Value="Right" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ProfileItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,15" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" 
+                                Background="{StaticResource BrushSurfaceMuted}" 
+                                CornerRadius="12" 
+                                Padding="20,15">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#EAE9E4" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#F0EFEB" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20,20,40,40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Profiles" FontFamily="{StaticResource FontFamilyHeader}" FontSize="36" Margin="0,0,0,30" />
+
+        <!-- Profile Sets Header Card -->
+        <Border Grid.Row="1" Style="{StaticResource SettingsContainerStyle}" Padding="20" Margin="0,0,0,25">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Active Set" FontSize="16" FontFamily="{StaticResource FontFamilyHeader}" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                    <ComboBox ItemsSource="{Binding ProfileSets}" 
+                              SelectedItem="{Binding SelectedProfileSet}" 
+                              Text="{Binding ProfileSetName, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              DisplayMemberPath="Name" 
+                              Width="220" VerticalAlignment="Center" 
+                              Padding="10,6" FontSize="14" />
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="Load Set" Command="{Binding LoadSetCommand}" Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Margin="0,0,10,0" Padding="20,10" Cursor="Hand" />
+                    
+                    <Border Background="{StaticResource BrushPrimary}" CornerRadius="8">
+                        <Button Content="Save Set" Command="{Binding SaveSetCommand}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="20,10" Cursor="Hand" />
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Profiles List -->
+        <ListBox Grid.Row="2" ItemsSource="{Binding Profiles}" 
+                 SelectedItem="{Binding SelectedProfile}"
+                 ItemContainerStyle="{StaticResource ProfileItemStyle}"
+                 Background="Transparent" BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Margin="0,0,0,20">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- App Info -->
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}" Margin="0,0,0,6" />
+                            <TextBlock Text="{Binding ExeName}" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" />
+                        </StackPanel>
+
+                        <!-- Brightness Control -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,40,0">
+                            <TextBlock Text="Brightness" FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,15,0" />
+                            <Slider Value="{Binding Brightness, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" Width="140" VerticalAlignment="Center" Margin="0,0,15,0" />
+                            <TextBlock Text="{Binding Brightness, StringFormat={}{0}%}" Width="45" TextAlignment="Right" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- Exclude Toggle -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Exclude" FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                            <CheckBox Style="{StaticResource ToggleSwitchStyle}" IsChecked="{Binding Excluded}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Bottom Actions -->
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Margin="0,0,10,0">
+                    <Button Content="Delete Selected" Command="{Binding DeleteSelectedProfileCommand}" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Padding="20,10" Cursor="Hand" />
+                </Border>
+                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8">
+                    <Button Content="Apply Selected" Command="{Binding ApplySelectedProfileCommand}" Background="Transparent" BorderThickness="0" Padding="20,10" Cursor="Hand" />
+                </Border>
+            </StackPanel>
+
+            <Border HorizontalAlignment="Right" Background="{StaticResource BrushPrimary}" CornerRadius="12">
+                <Button Content="Save All Profiles" 
+                        Command="{Binding SaveCommand}"
+                        Background="Transparent" 
+                        Foreground="White" 
+                        Padding="25,12" 
+                        BorderThickness="0"
+                        FontWeight="SemiBold"
+                        Cursor="Hand" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

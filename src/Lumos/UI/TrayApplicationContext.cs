@@ -2,6 +2,8 @@ using System.Drawing;
 using System.Diagnostics;
 using Lumos.Services;
 using Lumos.Services.Interfaces;
+using Lumos.UI.WPF;
+using Lumos.ViewModels;
 
 namespace Lumos.UI;
 
@@ -13,7 +15,7 @@ public sealed class TrayApplicationContext : ApplicationContext
     private readonly ILoggingService _loggingService;
     private readonly NotifyIcon _notifyIcon;
     private readonly IProfileStore _profileStore;
-    private readonly IThemeService _themeService;
+
     private readonly IClock _clock;
     private readonly StartupService _startupService;
     private readonly string _dataRoot;
@@ -27,10 +29,12 @@ public sealed class TrayApplicationContext : ApplicationContext
     private readonly ToolStripMenuItem _currentAppMenuItem;
     private readonly ToolStripMenuItem _currentBrightnessMenuItem;
     private readonly ToolStripMenuItem _providerMenuItem;
+    
+    private DashboardWindow? _dashboardWindow;
+    private MainViewModel? _mainViewModel;
 
     public TrayApplicationContext(
         IProfileStore profileStore,
-        IThemeService themeService,
         IClock clock,
         StartupService startupService,
         IActiveWindowService activeWindowService,
@@ -41,7 +45,7 @@ public sealed class TrayApplicationContext : ApplicationContext
         IBrightnessProvider? brightnessProvider)
     {
         _profileStore = profileStore;
-        _themeService = themeService;
+
         _clock = clock;
         _startupService = startupService;
         _activeWindowService = activeWindowService;
@@ -72,6 +76,7 @@ public sealed class TrayApplicationContext : ApplicationContext
             Icon = SystemIcons.Application,
             ContextMenuStrip = BuildMenu(),
         };
+        _notifyIcon.DoubleClick += async (_, _) => await ShowSettingsAsync();
 
         _foregroundTimer = new System.Windows.Forms.Timer { Interval = 300 };
         _foregroundTimer.Tick += async (_, _) => await OnForegroundTickAsync();
@@ -188,26 +193,37 @@ public sealed class TrayApplicationContext : ApplicationContext
         }
     }
 
+    private void EnsureDashboardWindow()
+    {
+        if (System.Windows.Application.Current == null)
+        {
+            var app = new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnExplicitShutdown };
+            app.Resources.MergedDictionaries.Add(new System.Windows.ResourceDictionary 
+            { 
+                Source = new Uri("pack://application:,,,/Lumos;component/UI/WPF/WpfResources.xaml", UriKind.Absolute) 
+            });
+        }
+
+        if (_dashboardWindow == null)
+        {
+            _mainViewModel = new MainViewModel(_profileStore, _startupService, _brightnessProvider);
+            _dashboardWindow = new DashboardWindow(_mainViewModel);
+        }
+    }
+
     private async Task ShowSettingsAsync()
     {
         try
         {
-            var settings = await _profileStore.LoadSettingsAsync();
-            using var form = new SettingsForm(settings, _themeService);
-            if (form.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            var updated = form.BuildUpdatedSettings(settings);
-            await _profileStore.SaveSettingsAsync(updated);
-            _automationMenuItem.Checked = updated.AutomationEnabled;
-            _startupService.SetEnabled(Application.ExecutablePath, updated.StartupEnabled);
-            UpdateStatus(updated);
+            EnsureDashboardWindow();
+            await _mainViewModel!.InitializeAsync();
+            _mainViewModel.CurrentView = _mainViewModel.SettingsVM;
+            _dashboardWindow!.Show();
+            _dashboardWindow.Activate();
         }
         catch (Exception ex)
         {
-            _loggingService.Error("Failed to show or save settings.", ex);
+            _loggingService.Error("Failed to show settings dashboard.", ex);
         }
     }
 
@@ -239,24 +255,15 @@ public sealed class TrayApplicationContext : ApplicationContext
     {
         try
         {
-            var profiles = await _profileStore.LoadProfilesAsync();
-            var sets = await _profileStore.LoadProfileSetsAsync();
-
-            using var form = new ProfilesForm(profiles, sets, _brightnessProvider, _themeService);
-            if (form.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            await _profileStore.SaveProfilesAsync(form.GetProfiles());
-            if (form.PendingSavedProfileSet is not null)
-            {
-                await _profileStore.SaveProfileSetAsync(form.PendingSavedProfileSet);
-            }
+            EnsureDashboardWindow();
+            await _mainViewModel!.InitializeAsync();
+            _mainViewModel.CurrentView = _mainViewModel.ProfilesVM;
+            _dashboardWindow!.Show();
+            _dashboardWindow.Activate();
         }
         catch (Exception ex)
         {
-            _loggingService.Error("Failed to show or save profiles.", ex);
+            _loggingService.Error("Failed to show profiles dashboard.", ex);
         }
     }
 
@@ -382,6 +389,12 @@ public sealed class TrayApplicationContext : ApplicationContext
         _coordinator?.Dispose();
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
+        
+        if (System.Windows.Application.Current != null)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+        
         base.ExitThreadCore();
     }
 }

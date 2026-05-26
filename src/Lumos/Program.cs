@@ -6,7 +6,7 @@ namespace Lumos;
 public static class Program
 {
     [STAThread]
-    private static async Task Main()
+    private static void Main()
     {
         using var singleInstanceGuard = new SingleInstanceGuard();
         if (!singleInstanceGuard.IsOwner)
@@ -20,12 +20,12 @@ public static class Program
         var dataRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Lumos");
         var logPath = Path.Combine(dataRoot, "logs", "lumos.log");
         var profileStore = new ProfileStore(dataRoot);
-        var themeService = new ThemeService();
+
         var loggingService = new LoggingService(logPath);
         var clock = new SystemClock();
         var startupService = new StartupService();
         var activeWindowService = new ActiveWindowService();
-        var settings = await profileStore.LoadSettingsAsync();
+        var settings = profileStore.LoadSettingsAsync().GetAwaiter().GetResult();
         var brightnessProviderManager = new BrightnessProviderManager([new WmiBrightnessProvider()]);
 
         AutomationCoordinator? coordinator = null;
@@ -43,18 +43,10 @@ public static class Program
 
         if (!settings.FirstRunCompleted)
         {
-            using var form = new FirstRunForm(themeService);
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                settings.FirstRunCompleted = true;
-                settings.StartupEnabled = form.StartWithWindows;
-                await profileStore.SaveSettingsAsync(settings);
-                startupService.SetEnabled(Application.ExecutablePath, settings.StartupEnabled);
-            }
-            else
-            {
-                return;
-            }
+            settings.FirstRunCompleted = true;
+            settings.StartupEnabled = true;
+            profileStore.SaveSettingsAsync(settings).GetAwaiter().GetResult();
+            startupService.SetEnabled(Application.ExecutablePath, settings.StartupEnabled);
         }
         else if (settings.StartupEnabled)
         {
@@ -67,7 +59,6 @@ public static class Program
 
         Application.Run(new TrayApplicationContext(
             profileStore,
-            themeService,
             clock,
             startupService,
             activeWindowService,
