@@ -14,7 +14,11 @@ public sealed class ProfilesForm : Form
     private readonly ComboBox _profileSetComboBox;
     private readonly List<ProfileSet> _profileSets;
 
-    public ProfilesForm(List<AppProfile> profiles, List<ProfileSet> profileSets, IThemeService? themeService = null)
+    public ProfilesForm(
+        List<AppProfile> profiles,
+        List<ProfileSet> profileSets,
+        IBrightnessProvider? brightnessProvider = null,
+        IThemeService? themeService = null)
     {
         Text = "Lumos Profiles";
         Width = 640;
@@ -116,6 +120,24 @@ public sealed class ProfilesForm : Form
         };
         deleteButton.Click += (_, _) => DeleteSelectedProfile();
 
+        var applyButton = new Button
+        {
+            Left = 150,
+            Top = 8,
+            Width = 120,
+            Text = "Apply Selected",
+        };
+        applyButton.Click += async (_, _) => await ApplySelectedProfileAsync(brightnessProvider);
+
+        var resetButton = new Button
+        {
+            Left = 288,
+            Top = 8,
+            Width = 120,
+            Text = "Reset All",
+        };
+        resetButton.Click += (_, _) => ResetProfiles();
+
         var saveButton = new Button
         {
             Left = 500,
@@ -126,6 +148,8 @@ public sealed class ProfilesForm : Form
         };
 
         bottomPanel.Controls.Add(deleteButton);
+        bottomPanel.Controls.Add(applyButton);
+        bottomPanel.Controls.Add(resetButton);
         bottomPanel.Controls.Add(saveButton);
 
         Controls.Add(_grid);
@@ -147,6 +171,25 @@ public sealed class ProfilesForm : Form
         if (_grid.CurrentRow?.DataBoundItem is AppProfile profile)
         {
             ((BindingList<AppProfile>)_bindingSource.DataSource!).Remove(profile);
+        }
+    }
+
+    private async Task ApplySelectedProfileAsync(IBrightnessProvider? brightnessProvider)
+    {
+        if (brightnessProvider is null || _grid.CurrentRow?.DataBoundItem is not AppProfile profile)
+        {
+            return;
+        }
+
+        await brightnessProvider.SetBrightnessAsync(profile.Brightness);
+    }
+
+    private void ResetProfiles()
+    {
+        if (MessageBox.Show(this, "Reset all profiles?", "Lumos", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+        {
+            _bindingSource.DataSource = new BindingList<AppProfile>();
+            _grid.DataSource = _bindingSource;
         }
     }
 

@@ -4,6 +4,7 @@ namespace Lumos.Services;
 
 public sealed class LoggingService : ILoggingService
 {
+    private const long MaxLogBytes = 1024 * 1024;
     private readonly string _logPath;
     private readonly object _lock = new();
 
@@ -29,7 +30,27 @@ public sealed class LoggingService : ILoggingService
         lock (_lock)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_logPath)!);
+            RotateIfNeeded();
             File.AppendAllLines(_logPath, [line]);
         }
+    }
+
+    private void RotateIfNeeded()
+    {
+        if (!File.Exists(_logPath))
+        {
+            return;
+        }
+
+        var file = new FileInfo(_logPath);
+        if (file.Length < MaxLogBytes)
+        {
+            return;
+        }
+
+        var archivePath = Path.Combine(
+            file.DirectoryName!,
+            $"{Path.GetFileNameWithoutExtension(_logPath)}.{DateTime.UtcNow:yyyyMMddHHmmss}.log");
+        File.Move(_logPath, archivePath, overwrite: true);
     }
 }

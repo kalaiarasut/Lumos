@@ -11,7 +11,11 @@ public sealed class TransitionService
         _brightnessProvider = brightnessProvider;
     }
 
-    public async Task ApplyAsync(byte targetBrightness, int durationMilliseconds, CancellationToken cancellationToken)
+    public async Task ApplyAsync(
+        byte targetBrightness,
+        int durationMilliseconds,
+        CancellationToken cancellationToken,
+        Action<byte>? automationValueApplied = null)
     {
         var current = await _brightnessProvider.GetCurrentBrightnessAsync(cancellationToken);
         const int steps = 6;
@@ -22,6 +26,7 @@ public sealed class TransitionService
             cancellationToken.ThrowIfCancellationRequested();
             var next = (byte)(current + ((targetBrightness - current) * step / steps));
             await _brightnessProvider.SetBrightnessAsync(next, cancellationToken);
+            automationValueApplied?.Invoke(next);
             await Task.Delay(delay, cancellationToken);
         }
     }

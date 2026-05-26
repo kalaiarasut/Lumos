@@ -3,7 +3,7 @@ using Lumos.Services.Interfaces;
 
 namespace Lumos.Services;
 
-public sealed class AutomationCoordinator
+public sealed class AutomationCoordinator : IDisposable
 {
     private static readonly TimeSpan LearningDebounce = TimeSpan.FromSeconds(1);
 
@@ -17,7 +17,10 @@ public sealed class AutomationCoordinator
     private byte? _pendingBrightness;
     private string? _pendingBrightnessExe;
     private DateTimeOffset? _pendingObservedAtUtc;
+    private byte? _lastAutomationBrightness;
     private DateTimeOffset? _suppressUntilUtc;
+    private DateTimeOffset? _manualRestoreCooldownUntilUtc;
+    private CancellationTokenSource? _restoreCancellation;
 
     public AutomationCoordinator(
         IActiveWindowService activeWindowService,
@@ -40,7 +43,12 @@ public sealed class AutomationCoordinator
     public async Task TickAsync(CancellationToken cancellationToken = default)
     {
         var settings = await _profileStore.LoadSettingsAsync(cancellationToken);
-        if (!settings.AutomationEnabled || (settings.PauseUntilUtc is not null && settings.PauseUntilUtc > _clock.UtcNow))
+        if (IsAutomationInactive(settings))
+        {
+            return;
+        }
+
+        if (_manualRestoreCooldownUntilUtc is not null && _manualRestoreCooldownUntilUtc > _clock.UtcNow)
         {
             return;
         }
@@ -70,46 +78,90 @@ public sealed class AutomationCoordinator
             return;
         }
 
-        if (settings.TransitionsEnabled && TransitionService is not null)
-        {
-            await TransitionService.ApplyAsync(profile.Brightness, settings.TransitionDurationMilliseconds, cancellationToken);
-        }
-        else
-        {
-            await _brightnessProvider.SetBrightnessAsync(profile.Brightness, cancellationToken);
-        }
+        _restoreCancellation?.Cancel();
+        _restoreCancellation?.Dispose();
+        _restoreCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        _suppressUntilUtc = _clock.UtcNow.AddSeconds(2);
-        _loggingService.Info($"Restored brightness {profile.Brightness} for {currentExe}");
+        try
+        {
+            if (settings.TransitionsEnabled && TransitionService is not null)
+            {
+                await TransitionService.ApplyAsync(
+                    profile.Brightness,
+                    settings.TransitionDurationMilliseconds,
+                    _restoreCancellation.Token,
+                    MarkAutomationBrightness);
+            }
+            else
+            {
+                await _brightnessProvider.SetBrightnessAsync(profile.Brightness, _restoreCancellation.Token);
+                MarkAutomationBrightness(profile.Brightness);
+            }
+
+            _loggingService.Info($"Restored brightness {profile.Brightness} for {currentExe}");
+        }
+        catch (OperationCanceledException) when (_restoreCancellation.IsCancellationRequested)
+        {
+            _loggingService.Info($"Cancelled brightness restore for {currentExe}");
+        }
+        finally
+        {
+            _restoreCancellation?.Dispose();
+            _restoreCancellation = null;
+        }
     }
 
-    public Task RecordObservedBrightnessAsync(byte brightness)
+    public async Task RecordObservedBrightnessAsync(byte brightness, CancellationToken cancellationToken = default)
     {
-        if (_suppressUntilUtc is not null && _suppressUntilUtc > _clock.UtcNow)
+        var settings = await _profileStore.LoadSettingsAsync(cancellationToken);
+        if (IsAutomationInactive(settings))
         {
-            return Task.CompletedTask;
+            return;
+        }
+
+        if (_lastAutomationBrightness == brightness &&
+            _suppressUntilUtc is not null &&
+            _suppressUntilUtc > _clock.UtcNow)
+        {
+            return;
+        }
+
+        if (_restoreCancellation is not null &&
+            !_restoreCancellation.IsCancellationRequested &&
+            _lastAutomationBrightness != brightness)
+        {
+            _restoreCancellation.Cancel();
         }
 
         var currentExe = _activeWindowService.GetForegroundExecutableName();
-        if (string.IsNullOrWhiteSpace(currentExe) || ActiveWindowService.IsIgnoredExecutable(currentExe))
+        if (string.IsNullOrWhiteSpace(currentExe) ||
+            ActiveWindowService.IsIgnoredExecutable(currentExe) ||
+            settings.ExcludedExecutables.Contains(currentExe, StringComparer.OrdinalIgnoreCase))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         if (_pendingBrightness == brightness &&
             string.Equals(_pendingBrightnessExe, currentExe, StringComparison.OrdinalIgnoreCase))
         {
-            return Task.CompletedTask;
+            return;
         }
 
+        _manualRestoreCooldownUntilUtc = _clock.UtcNow.AddSeconds(settings.ManualChangeRestoreCooldownSeconds);
         _pendingBrightness = brightness;
         _pendingBrightnessExe = currentExe;
         _pendingObservedAtUtc = _clock.UtcNow;
-        return Task.CompletedTask;
     }
 
     public async Task FlushPendingLearningAsync(CancellationToken cancellationToken = default)
     {
+        var settings = await _profileStore.LoadSettingsAsync(cancellationToken);
+        if (IsAutomationInactive(settings))
+        {
+            ClearPendingLearning();
+            return;
+        }
+
         if (_pendingBrightness is null || _pendingBrightnessExe is null || _pendingObservedAtUtc is null)
         {
             return;
@@ -143,8 +195,29 @@ public sealed class AutomationCoordinator
         await _profileStore.SaveProfilesAsync(profiles, cancellationToken);
         _loggingService.Info($"Learned brightness {_pendingBrightness.Value} for {_pendingBrightnessExe}");
 
+        ClearPendingLearning();
+    }
+
+    private bool IsAutomationInactive(AppSettings settings) =>
+        !settings.AutomationEnabled || (settings.PauseUntilUtc is not null && settings.PauseUntilUtc > _clock.UtcNow);
+
+    private void MarkAutomationBrightness(byte brightness)
+    {
+        _lastAutomationBrightness = brightness;
+        _suppressUntilUtc = _clock.UtcNow.AddSeconds(2);
+    }
+
+    private void ClearPendingLearning()
+    {
         _pendingBrightness = null;
         _pendingBrightnessExe = null;
         _pendingObservedAtUtc = null;
+    }
+
+    public void Dispose()
+    {
+        _restoreCancellation?.Cancel();
+        _restoreCancellation?.Dispose();
+        _restoreCancellation = null;
     }
 }

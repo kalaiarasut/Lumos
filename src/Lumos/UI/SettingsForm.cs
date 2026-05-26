@@ -10,13 +10,14 @@ public sealed class SettingsForm : Form
     private readonly CheckBox _transitionsCheckbox;
     private readonly CheckBox _thresholdCheckbox;
     private readonly NumericUpDown _thresholdValue;
+    private readonly NumericUpDown _cooldownValue;
     private readonly Button _saveButton;
 
     public SettingsForm(AppSettings settings, IThemeService? themeService = null)
     {
         Text = "Lumos Settings";
         Width = 460;
-        Height = 360;
+        Height = 390;
         StartPosition = FormStartPosition.CenterScreen;
 
         var themeLabel = new Label
@@ -73,10 +74,28 @@ public sealed class SettingsForm : Form
             Value = settings.SmallDifferenceThreshold,
         };
 
+        var cooldownLabel = new Label
+        {
+            Left = 20,
+            Top = 235,
+            Width = 260,
+            Text = "Manual restore cooldown (seconds)",
+        };
+
+        _cooldownValue = new NumericUpDown
+        {
+            Left = 40,
+            Top = 260,
+            Width = 80,
+            Minimum = 0,
+            Maximum = 60,
+            Value = settings.ManualChangeRestoreCooldownSeconds,
+        };
+
         _saveButton = new Button
         {
             Left = 320,
-            Top = 270,
+            Top = 310,
             Width = 100,
             Height = 32,
             Text = "Save",
@@ -89,6 +108,8 @@ public sealed class SettingsForm : Form
         Controls.Add(_transitionsCheckbox);
         Controls.Add(_thresholdCheckbox);
         Controls.Add(_thresholdValue);
+        Controls.Add(cooldownLabel);
+        Controls.Add(_cooldownValue);
         Controls.Add(_saveButton);
 
         AcceptButton = _saveButton;
@@ -103,6 +124,7 @@ public sealed class SettingsForm : Form
         existing.TransitionsEnabled = _transitionsCheckbox.Checked;
         existing.SkipSmallBrightnessDifferences = _thresholdCheckbox.Checked;
         existing.SmallDifferenceThreshold = (byte)_thresholdValue.Value;
+        existing.ManualChangeRestoreCooldownSeconds = (int)_cooldownValue.Value;
         existing.ThemeMode = "dark";
         return existing;
     }

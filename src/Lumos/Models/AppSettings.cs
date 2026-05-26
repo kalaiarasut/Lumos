@@ -7,6 +7,7 @@ public sealed class AppSettings
     public bool StartupEnabled { get; set; }
     public bool TransitionsEnabled { get; set; }
     public int TransitionDurationMilliseconds { get; set; }
+    public int ManualChangeRestoreCooldownSeconds { get; set; }
     public bool SkipSmallBrightnessDifferences { get; set; }
     public byte SmallDifferenceThreshold { get; set; }
     public bool VerboseLoggingEnabled { get; set; }
@@ -22,6 +23,7 @@ public sealed class AppSettings
             StartupEnabled = true,
             TransitionsEnabled = true,
             TransitionDurationMilliseconds = 350,
+            ManualChangeRestoreCooldownSeconds = 8,
             SkipSmallBrightnessDifferences = false,
             SmallDifferenceThreshold = 2,
             VerboseLoggingEnabled = false,

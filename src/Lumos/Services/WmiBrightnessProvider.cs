@@ -13,7 +13,7 @@ public sealed class WmiBrightnessProvider : IBrightnessProvider
         {
             try
             {
-                using var scope = new ManagementScope(@"\\.\root\wmi");
+                var scope = new ManagementScope(@"\\.\root\wmi");
                 using var searcher = new ManagementObjectSearcher(scope, new ObjectQuery("SELECT * FROM WmiMonitorBrightness"));
                 using var results = searcher.Get();
                 return results.Count > 0;
@@ -29,7 +29,7 @@ public sealed class WmiBrightnessProvider : IBrightnessProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        using var scope = new ManagementScope(@"\\.\root\wmi");
+        var scope = new ManagementScope(@"\\.\root\wmi");
         using var searcher = new ManagementObjectSearcher(scope, new ObjectQuery("SELECT * FROM WmiMonitorBrightness"));
         using var results = searcher.Get();
 
@@ -45,7 +45,7 @@ public sealed class WmiBrightnessProvider : IBrightnessProvider
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        using var scope = new ManagementScope(@"\\.\root\wmi");
+        var scope = new ManagementScope(@"\\.\root\wmi");
         using var searcher = new ManagementObjectSearcher(scope, new ObjectQuery("SELECT * FROM WmiMonitorBrightnessMethods"));
         using var results = searcher.Get();
 

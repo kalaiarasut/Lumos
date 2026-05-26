@@ -8,12 +8,20 @@ public static class Program
     [STAThread]
     private static async Task Main()
     {
+        using var singleInstanceGuard = new SingleInstanceGuard();
+        if (!singleInstanceGuard.IsOwner)
+        {
+            MessageBox.Show("Lumos is already running.", "Lumos", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
         ApplicationConfiguration.Initialize();
 
         var dataRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Lumos");
+        var logPath = Path.Combine(dataRoot, "logs", "lumos.log");
         var profileStore = new ProfileStore(dataRoot);
         var themeService = new ThemeService();
-        var loggingService = new LoggingService(Path.Combine(dataRoot, "logs", "lumos.log"));
+        var loggingService = new LoggingService(logPath);
         var clock = new SystemClock();
         var startupService = new StartupService();
         var activeWindowService = new ActiveWindowService();
@@ -53,12 +61,19 @@ public static class Program
             startupService.SetEnabled(Application.ExecutablePath, true);
         }
 
+        loggingService.Info(brightnessProviderManager.ActiveProvider is null
+            ? "No supported brightness provider was detected. Tray UI will remain available."
+            : $"Using brightness provider: {brightnessProviderManager.ActiveProvider.ProviderName}");
+
         Application.Run(new TrayApplicationContext(
             profileStore,
             themeService,
             clock,
             startupService,
             activeWindowService,
+            loggingService,
+            dataRoot,
+            logPath,
             coordinator,
             brightnessProviderManager.ActiveProvider));
     }

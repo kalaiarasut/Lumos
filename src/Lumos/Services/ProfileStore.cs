@@ -26,7 +26,7 @@ public sealed class ProfileStore : IProfileStore
         SaveAsync(GetSettingsPath(), settings, cancellationToken);
 
     public Task<List<AppProfile>> LoadProfilesAsync(CancellationToken cancellationToken = default) =>
-        LoadOrDefaultAsync(GetProfilesPath(), static () => [], cancellationToken);
+        LoadOrDefaultAsync<List<AppProfile>>(GetProfilesPath(), static () => [], cancellationToken);
 
     public Task SaveProfilesAsync(List<AppProfile> profiles, CancellationToken cancellationToken = default) =>
         SaveAsync(GetProfilesPath(), profiles, cancellationToken);
@@ -42,7 +42,7 @@ public sealed class ProfileStore : IProfileStore
 
         foreach (var file in files)
         {
-            var set = await LoadOrDefaultAsync(
+            var set = await LoadOrDefaultAsync<ProfileSet>(
                 file,
                 () => new ProfileSet
                 {
