@@ -26,13 +26,13 @@
                             
                             <ContentPresenter Grid.Column="0" VerticalAlignment="Center" Margin="0,0,15,0"/>
                             
-                            <Border x:Name="border" Grid.Column="1" Width="44" Height="24" CornerRadius="12" Background="{StaticResource BrushBorder}" VerticalAlignment="Center">
-                                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="White" HorizontalAlignment="Left" Margin="2" />
+                            <Border x:Name="border" Grid.Column="1" Width="44" Height="24" CornerRadius="12" Background="{DynamicResource BrushBorder}" VerticalAlignment="Center">
+                                <Ellipse x:Name="ellipse" Width="20" Height="20" Fill="{DynamicResource BrushSurface}" HorizontalAlignment="Left" Margin="2" />
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource BrushPrimary}" />
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BrushPrimary}" />
                                 <Setter TargetName="ellipse" Property="HorizontalAlignment" Value="Right" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -50,17 +50,17 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border x:Name="Bd" 
-                                Background="{StaticResource BrushSurfaceMuted}" 
+                                Background="{DynamicResource BrushSurfaceMuted}" 
                                 CornerRadius="12" 
                                 Padding="20,15">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#EAE9E4" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BrushBorder}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#F0EFEB" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BrushHover}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -80,7 +80,7 @@
         <TextBlock Grid.Row="0" Text="Profiles" FontFamily="{StaticResource FontFamilyHeader}" FontSize="36" Margin="0,0,0,30" />
 
         <!-- Profile Sets Header Card -->
-        <Border Grid.Row="1" Style="{StaticResource SettingsContainerStyle}" Padding="20" Margin="0,0,0,25">
+        <Border Grid.Row="1" Style="{DynamicResource SettingsContainerStyle}" Padding="20" Margin="0,0,0,25">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -99,10 +99,10 @@
                 </StackPanel>
                 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="Load Set" Command="{Binding LoadSetCommand}" Background="Transparent" BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" Margin="0,0,10,0" Padding="20,10" Cursor="Hand" />
+                    <Button Content="Load Set" Command="{Binding LoadSetCommand}" Background="Transparent" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" Margin="0,0,10,0" Padding="20,10" Cursor="Hand" />
                     
-                    <Border Background="{StaticResource BrushPrimary}" CornerRadius="8">
-                        <Button Content="Save Set" Command="{Binding SaveSetCommand}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="20,10" Cursor="Hand" />
+                    <Border Background="{DynamicResource BrushPrimary}" CornerRadius="8">
+                        <Button Content="Save Set" Command="{Binding SaveSetCommand}" Background="Transparent" Foreground="{DynamicResource BrushSurface}" BorderThickness="0" Padding="20,10" Cursor="Hand" />
                     </Border>
                 </StackPanel>
             </Grid>
@@ -126,20 +126,20 @@
 
                         <!-- App Info -->
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextPrimary}" Margin="0,0,0,6" />
-                            <TextBlock Text="{Binding ExeName}" FontSize="13" Foreground="{StaticResource BrushTextSecondary}" />
+                            <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextPrimary}" Margin="0,0,0,6" />
+                            <TextBlock Text="{Binding ExeName}" FontSize="13" Foreground="{DynamicResource BrushTextSecondary}" />
                         </StackPanel>
 
                         <!-- Brightness Control -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,40,0">
-                            <TextBlock Text="Brightness" FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,15,0" />
+                            <TextBlock Text="Brightness" FontSize="14" Foreground="{DynamicResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,15,0" />
                             <Slider Value="{Binding Brightness, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" Width="140" VerticalAlignment="Center" Margin="0,0,15,0" />
                             <TextBlock Text="{Binding Brightness, StringFormat={}{0}%}" Width="45" TextAlignment="Right" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </StackPanel>
 
                         <!-- Exclude Toggle -->
                         <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Exclude" FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                            <TextBlock Text="Exclude" FontSize="14" Foreground="{DynamicResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
                             <CheckBox Style="{StaticResource ToggleSwitchStyle}" IsChecked="{Binding Excluded}" />
                         </StackPanel>
                     </Grid>
@@ -150,19 +150,19 @@
         <!-- Bottom Actions -->
         <Grid Grid.Row="3">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8" Margin="0,0,10,0">
+                <Border BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="8" Margin="0,0,10,0">
                     <Button Content="Delete Selected" Command="{Binding DeleteSelectedProfileCommand}" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Padding="20,10" Cursor="Hand" />
                 </Border>
-                <Border BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="8">
+                <Border BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="8">
                     <Button Content="Apply Selected" Command="{Binding ApplySelectedProfileCommand}" Background="Transparent" BorderThickness="0" Padding="20,10" Cursor="Hand" />
                 </Border>
             </StackPanel>
 
-            <Border HorizontalAlignment="Right" Background="{StaticResource BrushPrimary}" CornerRadius="12">
+            <Border HorizontalAlignment="Right" Background="{DynamicResource BrushPrimary}" CornerRadius="12">
                 <Button Content="Save All Profiles" 
                         Command="{Binding SaveCommand}"
                         Background="Transparent" 
-                        Foreground="White" 
+                        Foreground="{DynamicResource BrushSurface}" 
                         Padding="25,12" 
                         BorderThickness="0"
                         FontWeight="SemiBold"

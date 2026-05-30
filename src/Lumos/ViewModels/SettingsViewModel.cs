@@ -57,6 +57,20 @@ public class SettingsViewModel : ObservableObject
         set { _settings.ManualChangeRestoreCooldownSeconds = value; OnPropertyChanged(); }
     }
 
+    public string ThemeMode
+    {
+        get => _settings.ThemeMode;
+        set 
+        {
+            if (_settings.ThemeMode != value)
+            {
+                _settings.ThemeMode = value; 
+                OnPropertyChanged();
+                Lumos.UI.WPF.ThemeManager.ApplyTheme(value);
+            }
+        }
+    }
+
     public async Task LoadAsync()
     {
         _settings = await _profileStore.LoadSettingsAsync();
@@ -66,12 +80,19 @@ public class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(SkipSmallBrightnessDifferences));
         OnPropertyChanged(nameof(SmallDifferenceThreshold));
         OnPropertyChanged(nameof(ManualChangeRestoreCooldownSeconds));
+        OnPropertyChanged(nameof(ThemeMode));
+        
+        if (System.Windows.Application.Current != null)
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => 
+            {
+                Lumos.UI.WPF.ThemeManager.ApplyTheme(_settings.ThemeMode);
+            });
+        }
     }
 
     private async Task SaveAsync()
     {
-        // Enforce light theme for the new UI direction
-        _settings.ThemeMode = "light";
         await _profileStore.SaveSettingsAsync(_settings);
         _startupService.SetEnabled(System.Windows.Forms.Application.ExecutablePath, _settings.StartupEnabled);
     }

@@ -36,6 +36,7 @@ public class ViewModelsTests
         await vm.LoadAsync();
         vm.AutomationEnabled = false;
         vm.SmallDifferenceThreshold = 99;
+        vm.ThemeMode = "light";
         
         vm.SaveCommand.Execute(null);
         // Wait a little since command executes async void

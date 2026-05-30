@@ -9,9 +9,9 @@
         Title="Lumos" Height="600" Width="900"
         Icon="pack://application:,,,/Resources/logo.ico"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BrushBackground}"
+        Background="{DynamicResource BrushBackground}"
         FontFamily="{StaticResource FontFamilyBody}"
-        TextElement.Foreground="{StaticResource BrushTextPrimary}">
+        TextElement.Foreground="{DynamicResource BrushTextPrimary}">
     
     <Window.Triggers>
         <EventTrigger RoutedEvent="Window.Loaded">
@@ -37,10 +37,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#0A000000" />
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BrushHover}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource BrushSurface}" />
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource BrushSurface}" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -48,7 +48,7 @@
                 </Setter.Value>
             </Setter>
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+            <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
         </Style>
     </Window.Resources>
 
@@ -59,7 +59,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{StaticResource BrushSidebar}" BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,1,0">
+        <Border Grid.Column="0" Background="{DynamicResource BrushSidebar}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,0,1,0">
             <StackPanel Margin="0,40,0,0">
                 <StackPanel Orientation="Horizontal" Margin="25,0,0,30">
                     <TextBlock Text="Lumos" FontFamily="{StaticResource FontFamilyHeader}" FontSize="28" FontWeight="Bold" />
