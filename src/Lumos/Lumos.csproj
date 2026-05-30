@@ -15,7 +15,11 @@
     <Description>Per-application brightness memory for Windows laptops.</Description>
     <Authors>Lumos</Authors>
     <Copyright>Copyright 2026</Copyright>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Resources\logo.ico" />
+  </ItemGroup>
   <ItemGroup>
     <Using Include="System.IO" />
   </ItemGroup>

@@ -7,6 +7,7 @@
         xmlns:vm="clr-namespace:Lumos.ViewModels"
         mc:Ignorable="d"
         Title="Lumos" Height="600" Width="900"
+        Icon="pack://application:,,,/Resources/logo.ico"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BrushBackground}"
         FontFamily="{StaticResource FontFamilyBody}"

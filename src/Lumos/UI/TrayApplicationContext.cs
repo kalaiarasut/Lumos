@@ -73,7 +73,7 @@ public sealed class TrayApplicationContext : ApplicationContext
         {
             Text = "Lumos",
             Visible = true,
-            Icon = SystemIcons.Application,
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath),
             ContextMenuStrip = BuildMenu(),
         };
         _notifyIcon.DoubleClick += async (_, _) => await ShowSettingsAsync();
