@@ -1,0 +1,20 @@
+About Lumos
+
+Lumos is a lightweight per-application brightness controller for Windows.
+
+What it does:
+- Runs silently from the system tray.
+- Detects the app you are actively using.
+- Learns brightness changes you make manually.
+- Restores the saved brightness when you return to that app.
+- Keeps profiles and settings stored locally on this PC.
+
+After installation:
+- Lumos starts in the tray when launched.
+- Open the tray menu to view settings, profiles, pause automation, or exit.
+- Windows startup can be enabled from Lumos settings.
+
+Privacy:
+- Lumos does not require an account.
+- Lumos does not upload your profiles or settings.
+- Brightness profiles are saved locally.

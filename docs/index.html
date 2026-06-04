@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumos — Intelligent Per-App Brightness for Windows</title>
+  <meta name="description" content="Lumos remembers and restores your display brightness for every app. Lightweight, private, and automatic. Free for Windows laptops." />
+  <meta name="keywords" content="brightness, Windows, per-app, display, tray app, automation, productivity" />
+  <meta name="author" content="Lumos" />
+  <meta property="og:title" content="Lumos — Intelligent Per-App Brightness for Windows" />
+  <meta property="og:description" content="Your display adapts to every app, automatically. Lumos learns your brightness preferences and applies them seamlessly." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/images/hero-mockup.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" href="assets/images/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Ambient Background Effects -->
+  <div class="ambient-bg" aria-hidden="true"></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <div class="particles" id="particles" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+    <div class="container nav__inner">
+      <a href="#" class="nav__brand" aria-label="Lumos Home">
+        <img src="assets/images/logo.png" alt="Lumos" class="nav__brand-icon" />
+        <span>Lumos</span>
+      </a>
+
+      <ul class="nav__links" id="navLinks" role="list">
+        <li><a href="#features" class="nav__link">Features</a></li>
+        <li><a href="#how-it-works" class="nav__link">How It Works</a></li>
+        <li><a href="#showcase" class="nav__link">Showcase</a></li>
+        <li><a href="#privacy" class="nav__link">Privacy</a></li>
+        <li><a href="#download" class="nav__link">Download</a></li>
+        <li>
+          <a href="#download" class="nav__cta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download Free</span>
+          </a>
+        </li>
+      </ul>
+
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero__content">
+        <div class="hero__text">
+          <div class="hero__badge">
+            <span class="hero__badge-dot"></span>
+            Version 0.3.0 — Now Available
+          </div>
+
+          <h1 class="hero__title">
+            Your display<br/>
+            <span class="hero__title-highlight">adapts to every app.</span>
+          </h1>
+
+          <p class="hero__subtitle">
+            Lumos learns your preferred brightness for every application and restores it seamlessly when you switch. No cloud. No accounts. Just light, exactly where you need it.
+          </p>
+
+          <div class="hero__actions">
+            <a href="#download" class="btn btn--primary" id="hero-download-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download for Windows</span>
+            </a>
+            <a href="https://github.com/kalaiarasut/Lumos" target="_blank" rel="noopener noreferrer" class="btn btn--ghost" id="hero-github-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              <span>View on GitHub</span>
+            </a>
+          </div>
+
+          <div class="hero__trust" style="display: flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; animation: fadeSlideUp 0.8s 0.52s ease-out both;">
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--text-tertiary); font-weight: 500;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Open Source
+            </span>
+            <span style="width: 1px; height: 14px; background: var(--border-subtle);"></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--text-tertiary); font-weight: 500;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Free Forever
+            </span>
+            <span style="width: 1px; height: 14px; background: var(--border-subtle);"></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--text-tertiary); font-weight: 500;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              No Telemetry
+            </span>
+          </div>
+
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <div class="hero__stat-value">< 15 MB</div>
+              <div class="hero__stat-label">Lightweight installer</div>
+            </div>
+            <div class="hero__stat">
+              <div class="hero__stat-value">0 ms</div>
+              <div class="hero__stat-label">No startup delay</div>
+            </div>
+            <div class="hero__stat">
+              <div class="hero__stat-value">100%</div>
+              <div class="hero__stat-label">Local & private</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__visual">
+          <div class="hero__visual-glow"></div>
+          <div class="hero__visual-img">
+            <img src="assets/images/hero-mockup.png" alt="Lumos brightness control interface showing per-app brightness profiles" width="640" height="640" loading="eager" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">
+          <svg class="section__label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          How It Works
+        </div>
+        <h2 class="section__title">Three steps. Zero configuration.</h2>
+        <p class="section__desc">Lumos runs silently in your system tray. It observes, learns, and adapts — all without interrupting your workflow.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal reveal-delay-1">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Switch apps normally</h3>
+          <p class="step__desc">Lumos watches which application is in the foreground every 300ms using lightweight Windows APIs.</p>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Adjust brightness once</h3>
+          <p class="step__desc">Change your display brightness to whatever feels right. Lumos detects the change and remembers it for that specific app.</p>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step__number">3</div>
+          <h3 class="step__title">It just works, forever</h3>
+          <p class="step__desc">Next time you return to that app, Lumos smoothly transitions to your saved brightness level. Automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Brightness Demo -->
+  <section class="section" id="demo">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">
+          <svg class="section__label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Live Preview
+        </div>
+        <h2 class="section__title">See it in action</h2>
+        <p class="section__desc">Watch how Lumos remembers different brightness levels for every app you use.</p>
+      </div>
+
+      <div class="brightness-demo reveal" id="brightnessDemo" role="presentation">
+        <div class="brightness-demo__header">
+          <span class="brightness-demo__header-title">Brightness Profiles</span>
+          <span class="brightness-demo__header-status">Monitoring</span>
+        </div>
+        <div class="brightness-demo__app" data-brightness="25">
+          <div class="brightness-demo__app-name">
+            <div class="brightness-demo__app-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            chrome.exe
+          </div>
+          <div class="brightness-demo__slider-wrapper">
+            <div class="brightness-demo__slider-track">
+              <div class="brightness-demo__slider-fill" style="width: 0%"></div>
+            </div>
+            <span class="brightness-demo__value">0%</span>
+          </div>
+        </div>
+
+        <div class="brightness-demo__app" data-brightness="45">
+          <div class="brightness-demo__app-name">
+            <div class="brightness-demo__app-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            Code.exe
+          </div>
+          <div class="brightness-demo__slider-wrapper">
+            <div class="brightness-demo__slider-track">
+              <div class="brightness-demo__slider-fill" style="width: 0%"></div>
+            </div>
+            <span class="brightness-demo__value">0%</span>
+          </div>
+        </div>
+
+        <div class="brightness-demo__app" data-brightness="15">
+          <div class="brightness-demo__app-name">
+            <div class="brightness-demo__app-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </div>
+            vlc.exe
+          </div>
+          <div class="brightness-demo__slider-wrapper">
+            <div class="brightness-demo__slider-track">
+              <div class="brightness-demo__slider-fill" style="width: 0%"></div>
+            </div>
+            <span class="brightness-demo__value">0%</span>
+          </div>
+        </div>
+
+        <div class="brightness-demo__app" data-brightness="70">
+          <div class="brightness-demo__app-name">
+            <div class="brightness-demo__app-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            Word.exe
+          </div>
+          <div class="brightness-demo__slider-wrapper">
+            <div class="brightness-demo__slider-track">
+              <div class="brightness-demo__slider-fill" style="width: 0%"></div>
+            </div>
+            <span class="brightness-demo__value">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">
+          <svg class="section__label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Features
+        </div>
+        <h2 class="section__title">Designed for how you actually work</h2>
+        <p class="section__desc">Every feature exists because it makes your display experience better, without getting in your way.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </div>
+          <h3 class="feature-card__title">Per-App Memory</h3>
+          <p class="feature-card__desc">Brightness profiles are keyed by executable name. Chrome gets 25%, VS Code gets 45%, VLC gets 15% — learned once, applied forever.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <h3 class="feature-card__title">Automatic Learning</h3>
+          <p class="feature-card__desc">Change your brightness manually and Lumos detects it, debounces it, and saves it to the current app's profile automatically.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+          </div>
+          <h3 class="feature-card__title">Smooth Transitions</h3>
+          <p class="feature-card__desc">No jarring brightness jumps. Lumos steps through intermediate levels with configurable smooth interpolation and cancellation support.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-4">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="feature-card__title">Fully Local & Private</h3>
+          <p class="feature-card__desc">No accounts. No cloud sync. No telemetry. All profiles, settings, and logs stay on your machine in %APPDATA%\Lumos.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-5">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3 class="feature-card__title">System Tray–First</h3>
+          <p class="feature-card__desc">Runs quietly in the background. Full control from the tray menu — enable, pause, resume, view status, access profiles and settings.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-6">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3 class="feature-card__title">Named Profile Sets</h3>
+          <p class="feature-card__desc">Save and load different brightness profiles as named sets — one for work, one for gaming, one for late-night browsing. Switch instantly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Showcase -->
+  <section class="section" id="showcase">
+    <div class="container">
+      <div class="showcase reveal">
+        <div class="showcase__visual">
+          <img src="assets/images/feature-dashboard.png" alt="Lumos settings dashboard with dark theme showing configuration toggles" width="640" height="640" loading="lazy" />
+        </div>
+        <div class="showcase__content">
+          <div class="showcase__label">Settings Dashboard</div>
+          <h2 class="showcase__title">Configure once,<br/>forget forever</h2>
+          <p class="showcase__desc">A clean WPF dashboard puts every setting within reach. Toggle automation, manage startup behavior, fine-tune transition smoothness, and set your preferred theme.</p>
+          <ul class="showcase__list">
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Enable or disable automation with a single toggle
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Start with Windows — launches automatically on login
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Configurable small-difference threshold and cooldown
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Light and dark theme support built-in
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="showcase showcase--reverse reveal">
+        <div class="showcase__visual">
+          <img src="assets/images/feature-tray.png" alt="Lumos system tray context menu with automation controls" width="640" height="640" loading="lazy" />
+        </div>
+        <div class="showcase__content">
+          <div class="showcase__label">Tray Controls</div>
+          <h2 class="showcase__title">Full control,<br/>zero clutter</h2>
+          <p class="showcase__desc">Right-click the tray icon for instant access to every Lumos feature. Pause automation for 30 minutes during a presentation, test brightness control, or quickly forget a learned profile.</p>
+          <ul class="showcase__list">
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Pause and resume automation instantly
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              View active app, brightness level, and provider
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              One-click access to profiles, settings, and logs
+            </li>
+            <li class="showcase__list-item">
+              <svg class="showcase__list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Forget any app's brightness memory on the spot
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy Section -->
+  <section class="section" id="privacy">
+    <div class="container">
+      <div class="section__header reveal">
+        <div class="section__label">
+          <svg class="section__label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Privacy-First
+        </div>
+        <h2 class="section__title">Your data never leaves your machine</h2>
+        <p class="section__desc">Lumos is built on a simple principle: brightness preferences are personal, and they should stay that way.</p>
+      </div>
+
+      <div class="privacy-grid">
+        <div class="privacy-card reveal reveal-delay-1">
+          <div class="privacy-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <h3 class="privacy-card__title">No Accounts</h3>
+          <p class="privacy-card__desc">No sign-up, no login, no registration of any kind.</p>
+        </div>
+
+        <div class="privacy-card reveal reveal-delay-2">
+          <div class="privacy-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3 class="privacy-card__title">No Telemetry</h3>
+          <p class="privacy-card__desc">Zero data collection. Zero analytics. Zero network requests.</p>
+        </div>
+
+        <div class="privacy-card reveal reveal-delay-3">
+          <div class="privacy-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <h3 class="privacy-card__title">Local JSON Files</h3>
+          <p class="privacy-card__desc">Profiles and settings stored as plain JSON in %APPDATA%.</p>
+        </div>
+
+        <div class="privacy-card reveal reveal-delay-4">
+          <div class="privacy-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 class="privacy-card__title">Corrupt Recovery</h3>
+          <p class="privacy-card__desc">If a config file is corrupted, Lumos safely moves it aside and starts fresh.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="section download" id="download">
+    <div class="container">
+      <div class="download__glow" aria-hidden="true"></div>
+      <div class="download__inner">
+        <div class="section__label reveal">
+          <svg class="section__label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </div>
+        <h2 class="download__title reveal">Get Lumos. It's free.</h2>
+        <p class="download__desc reveal">Download the installer, run it, and Lumos starts working in your system tray. No setup wizard, no configuration needed.</p>
+
+        <div class="download__card reveal">
+          <div class="download__version">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            v0.3.0
+          </div>
+
+          <a href="https://github.com/kalaiarasut/Lumos/releases/latest" target="_blank" rel="noopener noreferrer" class="btn btn--primary" id="download-btn" style="margin-bottom: 0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download LumosSetup-0.3.0.exe</span>
+          </a>
+
+          <p class="download__filename">LumosSetup-0.3.0.exe · Windows x64</p>
+
+          <div class="download__meta">
+            <div class="download__meta-item">
+              <div class="download__meta-value">Windows 10+</div>
+              <div class="download__meta-label">Supported OS</div>
+            </div>
+            <div class="download__meta-item">
+              <div class="download__meta-value">.NET 8</div>
+              <div class="download__meta-label">Runtime</div>
+            </div>
+            <div class="download__meta-item">
+              <div class="download__meta-value">x64</div>
+              <div class="download__meta-label">Architecture</div>
+            </div>
+            <div class="download__meta-item">
+              <div class="download__meta-value">Self-Contained</div>
+              <div class="download__meta-label">No prereqs</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="requirements reveal">
+          <h3 class="requirements__title">System Requirements</h3>
+          <div class="requirements__grid">
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Windows 10 or later
+            </div>
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Laptop internal display
+            </div>
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              WMI brightness support
+            </div>
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              x64 architecture
+            </div>
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              ~15 MB disk space
+            </div>
+            <div class="requirement">
+              <span class="requirement__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              No admin required
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <div class="footer__brand-name">
+            <img src="assets/images/logo.png" alt="" />
+            Lumos
+          </div>
+          <p class="footer__brand-desc">A lightweight Windows tray application that remembers and restores display brightness per application. Open-source and built for privacy.</p>
+        </div>
+
+        <div class="footer__links">
+          <div class="footer__group">
+            <h4 class="footer__group-title">Product</h4>
+            <ul class="footer__group-list">
+              <li><a href="#features" class="footer__group-link">Features</a></li>
+              <li><a href="#how-it-works" class="footer__group-link">How It Works</a></li>
+              <li><a href="#download" class="footer__group-link">Download</a></li>
+              <li><a href="#privacy" class="footer__group-link">Privacy</a></li>
+            </ul>
+          </div>
+          <div class="footer__group">
+            <h4 class="footer__group-title">Resources</h4>
+            <ul class="footer__group-list">
+              <li><a href="https://github.com/kalaiarasut/Lumos" target="_blank" rel="noopener noreferrer" class="footer__group-link">GitHub</a></li>
+              <li><a href="https://github.com/kalaiarasut/Lumos/issues" target="_blank" rel="noopener noreferrer" class="footer__group-link">Report an Issue</a></li>
+              <li><a href="https://github.com/kalaiarasut/Lumos/releases" target="_blank" rel="noopener noreferrer" class="footer__group-link">Releases</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 Lumos. Built with care for Windows users.</p>
+        <div class="footer__social">
+          <a href="https://github.com/kalaiarasut/Lumos" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script src="main.js"></script>
+</body>
+</html>
