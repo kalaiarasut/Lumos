@@ -4,6 +4,7 @@ using Lumos.Services;
 using Lumos.Services.Interfaces;
 using Lumos.UI.WPF;
 using Lumos.ViewModels;
+using System.Windows.Forms.Integration;
 
 namespace Lumos.UI;
 
@@ -15,11 +16,13 @@ public sealed class TrayApplicationContext : ApplicationContext
     private readonly ILoggingService _loggingService;
     private readonly NotifyIcon _notifyIcon;
     private readonly IProfileStore _profileStore;
+    private readonly ShutdownSignal _shutdownSignal;
 
     private readonly IClock _clock;
     private readonly StartupService _startupService;
     private readonly string _dataRoot;
     private readonly string _logPath;
+    private readonly System.Windows.Forms.Timer _shutdownTimer;
     private readonly System.Windows.Forms.Timer _foregroundTimer;
     private readonly System.Windows.Forms.Timer _brightnessTimer;
     private readonly ToolStripMenuItem _automationMenuItem;
@@ -42,9 +45,11 @@ public sealed class TrayApplicationContext : ApplicationContext
         string dataRoot,
         string logPath,
         AutomationCoordinator? coordinator,
-        IBrightnessProvider? brightnessProvider)
+        IBrightnessProvider? brightnessProvider,
+        ShutdownSignal shutdownSignal)
     {
         _profileStore = profileStore;
+        _shutdownSignal = shutdownSignal;
 
         _clock = clock;
         _startupService = startupService;
@@ -85,6 +90,10 @@ public sealed class TrayApplicationContext : ApplicationContext
         _brightnessTimer = new System.Windows.Forms.Timer { Interval = 500 };
         _brightnessTimer.Tick += async (_, _) => await OnBrightnessTickAsync();
         _brightnessTimer.Start();
+
+        _shutdownTimer = new System.Windows.Forms.Timer { Interval = 500 };
+        _shutdownTimer.Tick += (_, _) => OnShutdownTick();
+        _shutdownTimer.Start();
 
         _ = InitializeMenuStateAsync();
     }
@@ -208,6 +217,7 @@ public sealed class TrayApplicationContext : ApplicationContext
         {
             _mainViewModel = new MainViewModel(_profileStore, _startupService, _brightnessProvider);
             _dashboardWindow = new DashboardWindow(_mainViewModel);
+            ElementHost.EnableModelessKeyboardInterop(_dashboardWindow);
         }
     }
 
@@ -311,6 +321,22 @@ public sealed class TrayApplicationContext : ApplicationContext
         }
     }
 
+    private void OnShutdownTick()
+    {
+        try
+        {
+            if (_shutdownSignal.IsRequested())
+            {
+                _loggingService.Info("Shutdown requested.");
+                ExitThread();
+            }
+        }
+        catch (Exception ex)
+        {
+            _loggingService.Error("Shutdown signal polling failed.", ex);
+        }
+    }
+
     private async Task TestBrightnessControlAsync()
     {
         try
@@ -386,6 +412,8 @@ public sealed class TrayApplicationContext : ApplicationContext
         _foregroundTimer.Dispose();
         _brightnessTimer.Stop();
         _brightnessTimer.Dispose();
+        _shutdownTimer.Stop();
+        _shutdownTimer.Dispose();
         _coordinator?.Dispose();
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();

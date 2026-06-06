@@ -27,6 +27,7 @@
 
         <!-- Modern Toggle Switch Style -->
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">

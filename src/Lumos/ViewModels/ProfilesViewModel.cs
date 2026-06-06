@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Lumos.Models;
+using Lumos.Services;
 using Lumos.Services.Interfaces;
 
 namespace Lumos.ViewModels;
@@ -11,9 +12,25 @@ public class ProfilesViewModel : ObservableObject
 {
     private readonly IProfileStore _profileStore;
     private readonly IBrightnessProvider? _brightnessProvider;
+    private readonly Func<IReadOnlyList<InstalledAppOption>> _installedAppLoader;
 
     public ObservableCollection<AppProfileViewModel> Profiles { get; } = new();
     public ObservableCollection<ProfileSet> ProfileSets { get; } = new();
+    public ObservableCollection<InstalledAppOption> InstalledApps { get; } = new();
+
+    private InstalledAppOption? _selectedInstalledApp;
+    public InstalledAppOption? SelectedInstalledApp
+    {
+        get => _selectedInstalledApp;
+        set
+        {
+            if (SetProperty(ref _selectedInstalledApp, value) && value is not null)
+            {
+                NewDisplayName = value.DisplayName;
+                NewExeName = value.ExeName;
+            }
+        }
+    }
 
     private ProfileSet? _selectedProfileSet;
     public ProfileSet? SelectedProfileSet
@@ -68,16 +85,50 @@ public class ProfilesViewModel : ObservableObject
     }
 
     private int _newBrightness = 50;
+    private string _newBrightnessText = "50";
     public int NewBrightness
     {
         get => _newBrightness;
-        set => SetProperty(ref _newBrightness, Math.Clamp(value, 0, 100));
+        set
+        {
+            var clamped = Math.Clamp(value, 0, 100);
+            if (SetProperty(ref _newBrightness, clamped))
+            {
+                var text = clamped.ToString();
+                if (_newBrightnessText != text)
+                {
+                    _newBrightnessText = text;
+                    OnPropertyChanged(nameof(NewBrightnessText));
+                }
+            }
+        }
     }
 
-    public ProfilesViewModel(IProfileStore profileStore, IBrightnessProvider? brightnessProvider)
+    public string NewBrightnessText
+    {
+        get => _newBrightnessText;
+        set
+        {
+            var text = value?.Trim() ?? string.Empty;
+            if (!int.TryParse(text, out var parsed))
+            {
+                SetNewBrightnessText(_newBrightness.ToString());
+                return;
+            }
+
+            NewBrightness = parsed;
+            SetNewBrightnessText(_newBrightness.ToString());
+        }
+    }
+
+    public ProfilesViewModel(
+        IProfileStore profileStore,
+        IBrightnessProvider? brightnessProvider,
+        Func<IReadOnlyList<InstalledAppOption>>? installedAppLoader = null)
     {
         _profileStore = profileStore;
         _brightnessProvider = brightnessProvider;
+        _installedAppLoader = installedAppLoader ?? InstalledAppCatalog.GetInstalledApps;
 
         LoadSetCommand = new RelayCommand(LoadSet, () => SelectedProfileSet != null);
         SaveSetCommand = new AsyncRelayCommand(SaveSetAsync, () => !string.IsNullOrWhiteSpace(ProfileSetName));
@@ -103,6 +154,13 @@ public class ProfilesViewModel : ObservableObject
         foreach (var s in sets)
         {
             ProfileSets.Add(s);
+        }
+
+        InstalledApps.Clear();
+        var installedApps = await Task.Run(_installedAppLoader);
+        foreach (var app in installedApps)
+        {
+            InstalledApps.Add(app);
         }
 
         SelectedProfileSet = ProfileSets.FirstOrDefault();
@@ -180,6 +238,7 @@ public class ProfilesViewModel : ObservableObject
 
         Profiles.Add(profile);
         SelectedProfile = profile;
+        SelectedInstalledApp = null;
         NewDisplayName = "";
         NewExeName = "";
         NewBrightness = 50;
@@ -196,5 +255,16 @@ public class ProfilesViewModel : ObservableObject
     private async Task SaveAsync()
     {
         await _profileStore.SaveProfilesAsync(Profiles.Select(p => p.ToProfile()).ToList());
+    }
+
+    private void SetNewBrightnessText(string text)
+    {
+        if (_newBrightnessText == text)
+        {
+            return;
+        }
+
+        _newBrightnessText = text;
+        OnPropertyChanged(nameof(NewBrightnessText));
     }
 }

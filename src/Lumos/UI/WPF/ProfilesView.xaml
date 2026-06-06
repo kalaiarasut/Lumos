@@ -18,6 +18,7 @@
 
         <!-- Modern Toggle Switch Style -->
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
@@ -45,6 +46,7 @@
         </Style>
 
         <Style x:Key="ProfileItemStyle" TargetType="ListBoxItem">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
@@ -128,6 +130,10 @@
 
         <Border Grid.Row="2" Style="{DynamicResource SettingsContainerStyle}" Padding="20" Margin="0,0,0,25">
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.2*" />
                     <ColumnDefinition Width="1.2*" />
@@ -135,47 +141,65 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                    <TextBlock Text="Profile name" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="4" Margin="0,0,0,14">
+                    <TextBlock Text="Browse installed apps" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6"
+                               ToolTip="Optional. Pick an installed app to prefill the manual fields below, then adjust the name or executable if needed." />
+                    <ComboBox ItemsSource="{Binding InstalledApps}"
+                              SelectedItem="{Binding SelectedInstalledApp, UpdateSourceTrigger=PropertyChanged}"
+                              DisplayMemberPath="DisplayText"
+                              MaxDropDownHeight="280"
+                              Padding="10,8"
+                              FontSize="14"
+                              ToolTip="Select an installed application. Lumos uses its executable name, such as chrome.exe, to match the active app." />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
+                    <TextBlock Text="Profile name" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6"
+                               ToolTip="Manual field. This is only the friendly label shown in Lumos, for example Chrome or VS Code." />
                     <TextBox Text="{Binding NewDisplayName, UpdateSourceTrigger=PropertyChanged}"
                              Padding="10,8"
                              Background="{DynamicResource BrushSurface}"
                              Foreground="{DynamicResource BrushTextPrimary}"
                              BorderBrush="{DynamicResource BrushBorder}"
                              BorderThickness="1"
-                             ToolTip="Friendly name shown in the profile list, for example Chrome." />
+                             ToolTip="Manual field. Type any display name you want for this profile." />
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                    <TextBlock Text="Executable" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
+                    <TextBlock Text="Executable" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6"
+                               ToolTip="Manual field. This must match the app process name, such as chrome.exe, code.exe, or vlc.exe." />
                     <TextBox Text="{Binding NewExeName, UpdateSourceTrigger=PropertyChanged}"
                              Padding="10,8"
                              Background="{DynamicResource BrushSurface}"
                              Foreground="{DynamicResource BrushTextPrimary}"
                              BorderBrush="{DynamicResource BrushBorder}"
                              BorderThickness="1"
-                             ToolTip="Executable name to match, for example chrome.exe or code.exe." />
+                             ToolTip="Manual field. Enter the executable process name Lumos should match. If you omit .exe, Lumos adds it automatically." />
                 </StackPanel>
 
-                <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                    <TextBlock Text="Brightness %" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
-                    <TextBox Text="{Binding NewBrightness, UpdateSourceTrigger=PropertyChanged}"
+                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,0">
+                    <TextBlock Text="Brightness %" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6"
+                               ToolTip="Manual field. The brightness Lumos should restore when this executable becomes active." />
+                    <TextBox Text="{Binding NewBrightnessText, UpdateSourceTrigger=Explicit}"
                              Padding="10,8"
                              Background="{DynamicResource BrushSurface}"
                              Foreground="{DynamicResource BrushTextPrimary}"
                              BorderBrush="{DynamicResource BrushBorder}"
                              BorderThickness="1"
-                             ToolTip="Brightness percentage for the new app profile." />
+                             LostFocus="CommitBrightnessTextBox"
+                             KeyDown="CommitBrightnessTextBoxOnEnter"
+                             ToolTip="Manual field. Enter a brightness percentage from 0 to 100." />
                 </StackPanel>
 
-                <Border Grid.Column="3" Background="{DynamicResource BrushPrimary}" CornerRadius="8">
+                <Border Grid.Row="1" Grid.Column="3" Background="{DynamicResource BrushPrimary}" CornerRadius="8">
                     <Button Content="Add Profile"
                             Command="{Binding AddProfileCommand}"
                             Background="Transparent"
                             Foreground="{DynamicResource BrushSurface}"
                             BorderThickness="0"
                             Padding="20,10"
-                            Cursor="Hand" />
+                            Cursor="Hand"
+                            ToolTip="Adds the manual profile below. Profiles are not written to disk until you click Save All Profiles or Save Set." />
                 </Border>
             </Grid>
         </Border>
@@ -218,7 +242,7 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,40,0">
                             <TextBlock Text="Brightness" FontSize="14" Foreground="{DynamicResource BrushTextSecondary}" VerticalAlignment="Center" Margin="0,0,15,0" />
                             <Slider Value="{Binding Brightness, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Width="140" VerticalAlignment="Center" Margin="0,0,15,0" />
-                            <TextBox Text="{Binding Brightness, UpdateSourceTrigger=PropertyChanged}" Width="54" TextAlignment="Right" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Padding="6,3" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" />
+                            <TextBox Text="{Binding BrightnessText, UpdateSourceTrigger=Explicit}" Width="64" TextAlignment="Right" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Padding="6,3" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" LostFocus="CommitBrightnessTextBox" KeyDown="CommitBrightnessTextBoxOnEnter" />
                             <TextBlock Text="%" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="4,0,0,0" />
                         </StackPanel>
 

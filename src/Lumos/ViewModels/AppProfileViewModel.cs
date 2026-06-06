@@ -7,6 +7,7 @@ public sealed class AppProfileViewModel : ObservableObject
     private string _exeName;
     private string _displayName;
     private int _brightness;
+    private string _brightnessText;
     private bool _excluded;
     private DateTimeOffset _lastUpdatedUtc;
 
@@ -15,6 +16,7 @@ public sealed class AppProfileViewModel : ObservableObject
         _exeName = profile.ExeName;
         _displayName = profile.DisplayName;
         _brightness = profile.Brightness;
+        _brightnessText = profile.Brightness.ToString();
         _excluded = profile.Excluded;
         _lastUpdatedUtc = profile.LastUpdatedUtc;
     }
@@ -34,7 +36,36 @@ public sealed class AppProfileViewModel : ObservableObject
     public int Brightness
     {
         get => _brightness;
-        set => SetProperty(ref _brightness, Math.Clamp(value, 0, 100));
+        set
+        {
+            var clamped = Math.Clamp(value, 0, 100);
+            if (SetProperty(ref _brightness, clamped))
+            {
+                var text = clamped.ToString();
+                if (_brightnessText != text)
+                {
+                    _brightnessText = text;
+                    OnPropertyChanged(nameof(BrightnessText));
+                }
+            }
+        }
+    }
+
+    public string BrightnessText
+    {
+        get => _brightnessText;
+        set
+        {
+            var text = value?.Trim() ?? string.Empty;
+            if (!int.TryParse(text, out var parsed))
+            {
+                SetBrightnessText(_brightness.ToString());
+                return;
+            }
+
+            Brightness = parsed;
+            SetBrightnessText(_brightness.ToString());
+        }
     }
 
     public bool Excluded
@@ -58,4 +89,15 @@ public sealed class AppProfileViewModel : ObservableObject
             Excluded = Excluded,
             LastUpdatedUtc = LastUpdatedUtc == default ? DateTimeOffset.UtcNow : LastUpdatedUtc,
         };
+
+    private void SetBrightnessText(string text)
+    {
+        if (_brightnessText == text)
+        {
+            return;
+        }
+
+        _brightnessText = text;
+        OnPropertyChanged(nameof(BrightnessText));
+    }
 }

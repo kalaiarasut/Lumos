@@ -64,7 +64,7 @@ public class ViewModelsTests
         });
 
         var provider = new FakeBrightnessProvider(100);
-        var vm = new ProfilesViewModel(store, provider);
+        var vm = new ProfilesViewModel(store, provider, () => []);
         
         await vm.LoadAsync();
 
@@ -72,6 +72,56 @@ public class ViewModelsTests
         Assert.Equal("test.exe", vm.Profiles[0].ExeName);
         Assert.Single(vm.ProfileSets);
         Assert.Contains(vm.ProfileSets, s => s.Name == "custom");
+    }
+
+    [Fact]
+    public void ProfilesViewModel_SelectInstalledApp_PrefillsManualProfileFields()
+    {
+        var store = new InMemoryProfileStore(AppSettings.CreateDefault(), []);
+        var provider = new FakeBrightnessProvider(100);
+        var vm = new ProfilesViewModel(store, provider, () => []);
+        var app = new InstalledAppOption
+        {
+            DisplayName = "Visual Studio Code",
+            ExeName = "Code.exe"
+        };
+
+        vm.SelectedInstalledApp = app;
+
+        Assert.Equal("Visual Studio Code", vm.NewDisplayName);
+        Assert.Equal("Code.exe", vm.NewExeName);
+    }
+
+    [Fact]
+    public void AppProfileViewModel_BrightnessText_CommitsTypedNumber()
+    {
+        var vm = new AppProfileViewModel(new AppProfile
+        {
+            ExeName = "test.exe",
+            DisplayName = "test",
+            Brightness = 100
+        });
+
+        vm.BrightnessText = "40";
+
+        Assert.Equal(40, vm.Brightness);
+        Assert.Equal("40", vm.BrightnessText);
+    }
+
+    [Fact]
+    public void AppProfileViewModel_BrightnessText_RevertsInvalidText()
+    {
+        var vm = new AppProfileViewModel(new AppProfile
+        {
+            ExeName = "test.exe",
+            DisplayName = "test",
+            Brightness = 35
+        });
+
+        vm.BrightnessText = "";
+
+        Assert.Equal(35, vm.Brightness);
+        Assert.Equal("35", vm.BrightnessText);
     }
 
     [Fact]

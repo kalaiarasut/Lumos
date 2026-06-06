@@ -1,5 +1,5 @@
 #define MyAppName "Lumos"
-#define MyAppVersion "0.3.0"
+#define MyAppVersion "0.3.5"
 #define MyAppPublisher "Lumos"
 #define MyAppExeName "Lumos.exe"
 #define MyAppId "B559AE28-D7A5-4E7F-A409-ED329E0880BB"
@@ -22,6 +22,8 @@ SolidCompression=yes
 WizardStyle=modern
 SetupIconFile=..\src\Lumos\Resources\logo.ico
 InfoBeforeFile=InstallNotes.txt
+CloseApplications=no
+RestartApplications=no
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
@@ -215,6 +217,9 @@ begin
   if not IsLumosInstalled() then
     Exit;
 
+  if WizardSilent() then
+    Exit;
+
   Choice := ShowMaintenanceForm();
 
   if Choice = IDYES then
@@ -238,4 +243,30 @@ begin
   begin
     Result := False;
   end;
+end;
+
+procedure StopRunningLumos();
+var
+  ResultCode: Integer;
+begin
+  if FileExists(ExpandConstant('{app}\{#MyAppExeName}')) then
+  begin
+    Exec(ExpandConstant('{app}\{#MyAppExeName}'), '--shutdown', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Sleep(2500);
+  end;
+
+  Exec(
+    ExpandConstant('{cmd}'),
+    '/C taskkill /IM "{#MyAppExeName}" /T /F',
+    '',
+    SW_HIDE,
+    ewWaitUntilTerminated,
+    ResultCode);
+  Sleep(1000);
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+  StopRunningLumos();
+  Result := '';
 end;

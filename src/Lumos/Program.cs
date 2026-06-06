@@ -6,14 +6,22 @@ namespace Lumos;
 public static class Program
 {
     [STAThread]
-    private static void Main()
+    private static void Main(string[] args)
     {
+        if (args.Any(arg => string.Equals(arg, "--shutdown", StringComparison.OrdinalIgnoreCase)))
+        {
+            ShutdownSignal.RequestShutdown();
+            return;
+        }
+
         using var singleInstanceGuard = new SingleInstanceGuard();
         if (!singleInstanceGuard.IsOwner)
         {
             MessageBox.Show("Lumos is already running.", "Lumos", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
+
+        using var shutdownSignal = new ShutdownSignal();
 
         ApplicationConfiguration.Initialize();
 
@@ -66,6 +74,7 @@ public static class Program
             dataRoot,
             logPath,
             coordinator,
-            brightnessProviderManager.ActiveProvider));
+            brightnessProviderManager.ActiveProvider,
+            shutdownSignal));
     }
 }
