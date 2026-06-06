@@ -12,7 +12,7 @@ public class ProfilesViewModel : ObservableObject
     private readonly IProfileStore _profileStore;
     private readonly IBrightnessProvider? _brightnessProvider;
 
-    public ObservableCollection<AppProfile> Profiles { get; } = new();
+    public ObservableCollection<AppProfileViewModel> Profiles { get; } = new();
     public ObservableCollection<ProfileSet> ProfileSets { get; } = new();
 
     private ProfileSet? _selectedProfileSet;
@@ -38,8 +38,8 @@ public class ProfilesViewModel : ObservableObject
         }
     }
 
-    private AppProfile? _selectedProfile;
-    public AppProfile? SelectedProfile
+    private AppProfileViewModel? _selectedProfile;
+    public AppProfileViewModel? SelectedProfile
     {
         get => _selectedProfile;
         set { SetProperty(ref _selectedProfile, value); }
@@ -49,7 +49,30 @@ public class ProfilesViewModel : ObservableObject
     public ICommand SaveSetCommand { get; }
     public ICommand ApplySelectedProfileCommand { get; }
     public ICommand DeleteSelectedProfileCommand { get; }
+    public ICommand AddProfileCommand { get; }
+    public ICommand NewSetCommand { get; }
     public ICommand SaveCommand { get; }
+
+    private string _newDisplayName = "";
+    public string NewDisplayName
+    {
+        get => _newDisplayName;
+        set => SetProperty(ref _newDisplayName, value);
+    }
+
+    private string _newExeName = "";
+    public string NewExeName
+    {
+        get => _newExeName;
+        set => SetProperty(ref _newExeName, value);
+    }
+
+    private int _newBrightness = 50;
+    public int NewBrightness
+    {
+        get => _newBrightness;
+        set => SetProperty(ref _newBrightness, Math.Clamp(value, 0, 100));
+    }
 
     public ProfilesViewModel(IProfileStore profileStore, IBrightnessProvider? brightnessProvider)
     {
@@ -60,6 +83,8 @@ public class ProfilesViewModel : ObservableObject
         SaveSetCommand = new AsyncRelayCommand(SaveSetAsync, () => !string.IsNullOrWhiteSpace(ProfileSetName));
         ApplySelectedProfileCommand = new AsyncRelayCommand(ApplySelectedProfileAsync, () => SelectedProfile != null && _brightnessProvider != null);
         DeleteSelectedProfileCommand = new RelayCommand(DeleteSelectedProfile, () => SelectedProfile != null);
+        AddProfileCommand = new RelayCommand(AddProfile);
+        NewSetCommand = new RelayCommand(CreateNewSet);
         SaveCommand = new AsyncRelayCommand(SaveAsync);
     }
 
@@ -71,7 +96,7 @@ public class ProfilesViewModel : ObservableObject
         Profiles.Clear();
         foreach (var p in profiles)
         {
-            Profiles.Add(CloneProfile(p));
+            Profiles.Add(new AppProfileViewModel(p));
         }
 
         ProfileSets.Clear();
@@ -89,7 +114,7 @@ public class ProfilesViewModel : ObservableObject
         Profiles.Clear();
         foreach (var p in SelectedProfileSet.Profiles)
         {
-            Profiles.Add(CloneProfile(p));
+            Profiles.Add(new AppProfileViewModel(p));
         }
     }
 
@@ -99,7 +124,7 @@ public class ProfilesViewModel : ObservableObject
         var newSet = new ProfileSet
         {
             Name = name,
-            Profiles = Profiles.Select(CloneProfile).ToList()
+            Profiles = Profiles.Select(p => p.ToProfile()).ToList()
         };
         await _profileStore.SaveProfileSetAsync(newSet);
         
@@ -120,7 +145,7 @@ public class ProfilesViewModel : ObservableObject
     private async Task ApplySelectedProfileAsync()
     {
         if (_brightnessProvider == null || SelectedProfile == null) return;
-        await _brightnessProvider.SetBrightnessAsync(SelectedProfile.Brightness);
+        await _brightnessProvider.SetBrightnessAsync((byte)SelectedProfile.Brightness);
     }
 
     private void DeleteSelectedProfile()
@@ -131,18 +156,45 @@ public class ProfilesViewModel : ObservableObject
         }
     }
 
-    private async Task SaveAsync()
+    private void AddProfile()
     {
-        await _profileStore.SaveProfilesAsync(Profiles.Select(CloneProfile).ToList());
+        if (string.IsNullOrWhiteSpace(NewExeName))
+        {
+            return;
+        }
+
+        var exeName = NewExeName.Trim();
+        if (!exeName.EndsWith(".exe", System.StringComparison.OrdinalIgnoreCase))
+        {
+            exeName += ".exe";
+        }
+
+        var profile = new AppProfileViewModel(new AppProfile
+        {
+            ExeName = exeName,
+            DisplayName = string.IsNullOrWhiteSpace(NewDisplayName) ? Path.GetFileNameWithoutExtension(exeName) : NewDisplayName.Trim(),
+            Brightness = (byte)Math.Clamp(NewBrightness, 0, 100),
+            Excluded = false,
+            LastUpdatedUtc = DateTimeOffset.UtcNow,
+        });
+
+        Profiles.Add(profile);
+        SelectedProfile = profile;
+        NewDisplayName = "";
+        NewExeName = "";
+        NewBrightness = 50;
     }
 
-    private static AppProfile CloneProfile(AppProfile profile) =>
-        new()
-        {
-            ExeName = profile.ExeName,
-            DisplayName = profile.DisplayName,
-            Brightness = profile.Brightness,
-            Excluded = profile.Excluded,
-            LastUpdatedUtc = profile.LastUpdatedUtc,
-        };
+    private void CreateNewSet()
+    {
+        Profiles.Clear();
+        SelectedProfile = null;
+        SelectedProfileSet = null;
+        ProfileSetName = $"set-{DateTimeOffset.Now:yyyyMMdd-HHmm}";
+    }
+
+    private async Task SaveAsync()
+    {
+        await _profileStore.SaveProfilesAsync(Profiles.Select(p => p.ToProfile()).ToList());
+    }
 }

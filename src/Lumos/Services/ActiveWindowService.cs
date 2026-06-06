@@ -10,6 +10,7 @@ public sealed partial class ActiveWindowService : IActiveWindowService
     {
         "SearchHost.exe",
         "ApplicationFrameHost.exe",
+        "Lumos.exe",
     };
 
     public string? GetForegroundExecutableName()

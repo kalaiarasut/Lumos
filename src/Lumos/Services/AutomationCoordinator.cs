@@ -64,7 +64,7 @@ public sealed class AutomationCoordinator : IDisposable
 
         _lastForegroundExe = currentExe;
 
-        var profiles = await _profileStore.LoadProfilesAsync(cancellationToken);
+        var profiles = await LoadProfilesForCurrentScheduleAsync(settings, cancellationToken);
         var profile = profiles.FirstOrDefault(x => string.Equals(x.ExeName, currentExe, StringComparison.OrdinalIgnoreCase));
         if (profile is null || profile.Excluded)
         {
@@ -200,6 +200,42 @@ public sealed class AutomationCoordinator : IDisposable
 
     private bool IsAutomationInactive(AppSettings settings) =>
         !settings.AutomationEnabled || (settings.PauseUntilUtc is not null && settings.PauseUntilUtc > _clock.UtcNow);
+
+    private async Task<List<AppProfile>> LoadProfilesForCurrentScheduleAsync(AppSettings settings, CancellationToken cancellationToken)
+    {
+        if (settings.ScheduledProfileEnabled &&
+            IsWithinScheduledProfileWindow(settings) &&
+            !string.IsNullOrWhiteSpace(settings.ScheduledProfileSetName))
+        {
+            var sets = await _profileStore.LoadProfileSetsAsync(cancellationToken);
+            var set = sets.FirstOrDefault(x => string.Equals(x.Name, settings.ScheduledProfileSetName, StringComparison.OrdinalIgnoreCase));
+            if (set is not null)
+            {
+                return set.Profiles;
+            }
+        }
+
+        return await _profileStore.LoadProfilesAsync(cancellationToken);
+    }
+
+    private bool IsWithinScheduledProfileWindow(AppSettings settings)
+    {
+        if (!TimeOnly.TryParse(settings.ScheduledProfileStartTime, out var start) ||
+            !TimeOnly.TryParse(settings.ScheduledProfileEndTime, out var end))
+        {
+            return false;
+        }
+
+        var now = TimeOnly.FromDateTime(_clock.UtcNow.ToLocalTime().DateTime);
+        if (start == end)
+        {
+            return true;
+        }
+
+        return start < end
+            ? now >= start && now < end
+            : now >= start || now < end;
+    }
 
     private void MarkAutomationBrightness(byte brightness)
     {

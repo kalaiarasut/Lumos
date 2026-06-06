@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Lumos.Models;
@@ -20,6 +21,7 @@ public class SettingsViewModel : ObservableObject
     }
 
     public ICommand SaveCommand { get; }
+    public ObservableCollection<ProfileSet> ProfileSets { get; } = new();
 
     public bool AutomationEnabled
     {
@@ -71,9 +73,41 @@ public class SettingsViewModel : ObservableObject
         }
     }
 
+    public bool ScheduledProfileEnabled
+    {
+        get => _settings.ScheduledProfileEnabled;
+        set { _settings.ScheduledProfileEnabled = value; OnPropertyChanged(); }
+    }
+
+    public string ScheduledProfileSetName
+    {
+        get => _settings.ScheduledProfileSetName;
+        set { _settings.ScheduledProfileSetName = value; OnPropertyChanged(); }
+    }
+
+    public string ScheduledProfileStartTime
+    {
+        get => _settings.ScheduledProfileStartTime;
+        set { _settings.ScheduledProfileStartTime = value; OnPropertyChanged(); }
+    }
+
+    public string ScheduledProfileEndTime
+    {
+        get => _settings.ScheduledProfileEndTime;
+        set { _settings.ScheduledProfileEndTime = value; OnPropertyChanged(); }
+    }
+
     public async Task LoadAsync()
     {
         _settings = await _profileStore.LoadSettingsAsync();
+        var profileSets = await _profileStore.LoadProfileSetsAsync();
+
+        ProfileSets.Clear();
+        foreach (var profileSet in profileSets)
+        {
+            ProfileSets.Add(profileSet);
+        }
+
         OnPropertyChanged(nameof(AutomationEnabled));
         OnPropertyChanged(nameof(StartupEnabled));
         OnPropertyChanged(nameof(TransitionsEnabled));
@@ -81,6 +115,10 @@ public class SettingsViewModel : ObservableObject
         OnPropertyChanged(nameof(SmallDifferenceThreshold));
         OnPropertyChanged(nameof(ManualChangeRestoreCooldownSeconds));
         OnPropertyChanged(nameof(ThemeMode));
+        OnPropertyChanged(nameof(ScheduledProfileEnabled));
+        OnPropertyChanged(nameof(ScheduledProfileSetName));
+        OnPropertyChanged(nameof(ScheduledProfileStartTime));
+        OnPropertyChanged(nameof(ScheduledProfileEndTime));
         
         if (System.Windows.Application.Current != null)
         {

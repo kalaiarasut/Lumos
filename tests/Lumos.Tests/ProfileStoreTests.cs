@@ -31,7 +31,7 @@ public sealed class ProfileStoreTests
         var loadedSettings = await store.LoadSettingsAsync();
         var loadedProfiles = await store.LoadProfilesAsync();
 
-        Assert.Equal("dark", loadedSettings.ThemeMode);
+        Assert.Equal("light", loadedSettings.ThemeMode);
         Assert.Single(loadedProfiles);
         Assert.Equal("chrome.exe", loadedProfiles[0].ExeName);
     }
@@ -46,7 +46,7 @@ public sealed class ProfileStoreTests
         var store = new ProfileStore(root);
         var settings = await store.LoadSettingsAsync();
 
-        Assert.Equal("dark", settings.ThemeMode);
+        Assert.Equal("light", settings.ThemeMode);
         Assert.Single(Directory.GetFiles(root, "settings.json.corrupt.*"));
     }
 }

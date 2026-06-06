@@ -13,6 +13,18 @@
     </UserControl.Triggers>
 
     <UserControl.Resources>
+        <Style x:Key="HelpTipStyle" TargetType="Border">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Background" Value="{DynamicResource BrushBorder}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+            <Setter Property="Cursor" Value="Help" />
+            <Setter Property="ToolTipService.InitialShowDelay" Value="150" />
+            <Setter Property="ToolTipService.ShowDuration" Value="20000" />
+        </Style>
+
         <!-- Modern Toggle Switch Style -->
         <Style x:Key="ToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="Template">
@@ -77,23 +89,120 @@
                 </StackPanel>
             </Border>
 
+            <Border Style="{StaticResource SettingsContainerStyle}" Padding="30" Margin="0,0,0,25">
+                <StackPanel>
+                    <TextBlock Text="Scheduled profile preset" FontFamily="{StaticResource FontFamilyHeader}" FontSize="20" Margin="0,0,0,10" />
+                    <TextBlock Text="Use a selected profile set automatically during a daily time window." Foreground="{DynamicResource BrushTextSecondary}" FontSize="13" Margin="0,0,0,25" />
+
+                    <CheckBox Content="Enable scheduled profile preset"
+                              Style="{StaticResource ToggleSwitchStyle}"
+                              IsChecked="{Binding ScheduledProfileEnabled}"
+                              FontSize="14"
+                              Margin="0,0,0,20"
+                              ToolTip="When enabled, Lumos uses the selected profile set during the configured time range. Outside that range, normal learned profiles are used." />
+
+                    <Grid Margin="0,0,0,20">
+                        <TextBlock Text="Profile set:" VerticalAlignment="Center" FontSize="14" />
+                        <ComboBox ItemsSource="{Binding ProfileSets}"
+                                  SelectedValue="{Binding ScheduledProfileSetName, UpdateSourceTrigger=PropertyChanged}"
+                                  Text="{Binding ScheduledProfileSetName, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="Name"
+                                  DisplayMemberPath="Name"
+                                  IsEditable="True"
+                                  Width="220"
+                                  HorizontalAlignment="Right"
+                                  Padding="8,4"
+                                  Background="{DynamicResource BrushSurface}"
+                                  BorderBrush="{DynamicResource BrushBorder}"
+                                  BorderThickness="1"
+                                  ToolTip="Select the saved profile set Lumos should use during the scheduled window." />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Start time" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding ScheduledProfileStartTime, UpdateSourceTrigger=PropertyChanged}"
+                                     Padding="8,4"
+                                     Background="{DynamicResource BrushSurface}"
+                                     Foreground="{DynamicResource BrushTextPrimary}"
+                                     BorderBrush="{DynamicResource BrushBorder}"
+                                     BorderThickness="1"
+                                     ToolTip="Daily start time in 24-hour format, for example 06:00." />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="End time" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
+                            <TextBox Text="{Binding ScheduledProfileEndTime, UpdateSourceTrigger=PropertyChanged}"
+                                     Padding="8,4"
+                                     Background="{DynamicResource BrushSurface}"
+                                     Foreground="{DynamicResource BrushTextPrimary}"
+                                     BorderBrush="{DynamicResource BrushBorder}"
+                                     BorderThickness="1"
+                                     ToolTip="Daily end time in 24-hour format, for example 19:00. Overnight ranges like 19:00 to 06:00 are supported." />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <Border Style="{StaticResource SettingsContainerStyle}" Padding="30" Margin="0,0,0,30">
                 <StackPanel>
                     <TextBlock Text="Advanced" FontFamily="{StaticResource FontFamilyHeader}" FontSize="20" Margin="0,0,0,25" />
                     
-                    <CheckBox Content="Skip tiny brightness differences" 
-                              Style="{StaticResource ToggleSwitchStyle}" 
-                              IsChecked="{Binding SkipSmallBrightnessDifferences}" 
-                              FontSize="14"
-                              Margin="0,0,0,20" />
+                    <Grid Margin="0,0,0,20"
+                          ToolTipService.InitialShowDelay="150"
+                          ToolTip="When enabled, Lumos does not change brightness if the saved value and current value are almost the same. This avoids unnecessary small brightness jumps.">
+                        <CheckBox Content="Skip tiny brightness differences" 
+                                  Style="{StaticResource ToggleSwitchStyle}" 
+                                  IsChecked="{Binding SkipSmallBrightnessDifferences}" 
+                                  FontSize="14" />
+                        <Border Style="{StaticResource HelpTipStyle}"
+                                HorizontalAlignment="Left"
+                                Margin="220,0,0,0">
+                            <Border.ToolTip>
+                                <ToolTip MaxWidth="360">
+                                    <TextBlock TextWrapping="Wrap" Text="When enabled, Lumos does not change brightness if the saved value and current value are almost the same. This avoids unnecessary small brightness jumps." />
+                                </ToolTip>
+                            </Border.ToolTip>
+                            <TextBlock Text="?" TextAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextSecondary}" />
+                        </Border>
+                    </Grid>
                               
-                    <Grid Margin="0,0,0,20">
-                        <TextBlock Text="Threshold:" VerticalAlignment="Center" FontSize="14" />
+                    <Grid Margin="0,0,0,20"
+                          ToolTipService.InitialShowDelay="150"
+                          ToolTip="The maximum percentage difference Lumos should ignore when Skip tiny brightness differences is enabled. Example: 2 means 50% and 52% are treated as close enough.">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Threshold:" VerticalAlignment="Center" FontSize="14" />
+                            <Border Style="{StaticResource HelpTipStyle}">
+                                <Border.ToolTip>
+                                    <ToolTip MaxWidth="360">
+                                        <TextBlock TextWrapping="Wrap" Text="The maximum percentage difference Lumos should ignore when Skip tiny brightness differences is enabled. Example: 2 means 50% and 52% are treated as close enough." />
+                                    </ToolTip>
+                                </Border.ToolTip>
+                                <TextBlock Text="?" TextAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextSecondary}" />
+                            </Border>
+                        </StackPanel>
                         <TextBox Text="{Binding SmallDifferenceThreshold, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="8,4" HorizontalAlignment="Right" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" />
                     </Grid>
                     
-                    <Grid>
-                        <TextBlock Text="Manual restore cooldown (s):" VerticalAlignment="Center" FontSize="14" />
+                    <Grid ToolTipService.InitialShowDelay="150"
+                          ToolTip="After you manually change brightness, Lumos waits this many seconds before restoring app-specific brightness again. This prevents the app from fighting your manual adjustment.">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Manual restore cooldown (s):" VerticalAlignment="Center" FontSize="14" />
+                            <Border Style="{StaticResource HelpTipStyle}">
+                                <Border.ToolTip>
+                                    <ToolTip MaxWidth="360">
+                                        <TextBlock TextWrapping="Wrap" Text="After you manually change brightness, Lumos waits this many seconds before restoring app-specific brightness again. This prevents the app from fighting your manual adjustment." />
+                                    </ToolTip>
+                                </Border.ToolTip>
+                                <TextBlock Text="?" TextAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextSecondary}" />
+                            </Border>
+                        </StackPanel>
                         <TextBox Text="{Binding ManualChangeRestoreCooldownSeconds, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="8,4" HorizontalAlignment="Right" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" />
                     </Grid>
                 </StackPanel>

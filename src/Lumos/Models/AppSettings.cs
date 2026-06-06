@@ -12,9 +12,13 @@ public sealed class AppSettings
     public byte SmallDifferenceThreshold { get; set; }
     public bool VerboseLoggingEnabled { get; set; }
     public bool FirstRunCompleted { get; set; }
-    public string ThemeMode { get; set; } = "dark";
+    public string ThemeMode { get; set; } = "light";
     public List<string> ExcludedExecutables { get; set; } = [];
     public string ActiveProfileSetName { get; set; } = "default";
+    public bool ScheduledProfileEnabled { get; set; }
+    public string ScheduledProfileSetName { get; set; } = "default";
+    public string ScheduledProfileStartTime { get; set; } = "06:00";
+    public string ScheduledProfileEndTime { get; set; } = "19:00";
 
     public static AppSettings CreateDefault() =>
         new()
@@ -28,6 +32,10 @@ public sealed class AppSettings
             SmallDifferenceThreshold = 2,
             VerboseLoggingEnabled = false,
             FirstRunCompleted = false,
-            ThemeMode = "dark",
+            ThemeMode = "light",
+            ScheduledProfileEnabled = false,
+            ScheduledProfileSetName = "default",
+            ScheduledProfileStartTime = "06:00",
+            ScheduledProfileEndTime = "19:00",
         };
 }

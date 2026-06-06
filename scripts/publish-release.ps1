@@ -46,7 +46,8 @@ if (-not $iscc) {
 }
 
 if ($iscc) {
-    & $iscc.FullName $installerScript
+    $isccExecutable = if ($iscc.Source) { $iscc.Source } else { $iscc.FullName }
+    & $isccExecutable $installerScript
 } else {
     Write-Warning "Inno Setup compiler (iscc.exe) was not found on PATH. Publish output is ready at $publishDir."
     Write-Warning "Install Inno Setup and rerun this script to build artifacts\installer\LumosSetup-$version.exe."
