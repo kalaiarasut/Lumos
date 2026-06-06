@@ -18,9 +18,11 @@ namespace Lumos.UI.WPF
 
             var dictionaries = application.Resources.MergedDictionaries;
             
-            // Remove existing theme dictionaries
+            // Remove existing theme color dictionaries only (not ModernControls)
             var existingThemes = dictionaries
-                .Where(d => d.Source != null && d.Source.OriginalString.Contains("/UI/WPF/Themes/"))
+                .Where(d => d.Source != null && 
+                       (d.Source.OriginalString.EndsWith("Light.xaml") || 
+                        d.Source.OriginalString.EndsWith("Dark.xaml")))
                 .ToList();
                 
             foreach (var existingTheme in existingThemes)
@@ -28,8 +30,16 @@ namespace Lumos.UI.WPF
                 dictionaries.Remove(existingTheme);
             }
 
-            // Add the new theme dictionary
-            dictionaries.Add(new ResourceDictionary { Source = new Uri(themeUri) });
+            // Add the new theme dictionary (insert before ModernControls so it can reference theme brushes)
+            var modernControlsIndex = dictionaries
+                .Select((d, i) => new { d, i })
+                .FirstOrDefault(x => x.d.Source != null && x.d.Source.OriginalString.Contains("ModernControls"))?.i ?? -1;
+
+            var newTheme = new ResourceDictionary { Source = new Uri(themeUri) };
+            if (modernControlsIndex >= 0)
+                dictionaries.Insert(modernControlsIndex, newTheme);
+            else
+                dictionaries.Add(newTheme);
         }
     }
 }

@@ -71,7 +71,10 @@
                               
                     <Grid Margin="0,0,0,20">
                         <TextBlock Text="Theme:" VerticalAlignment="Center" FontSize="14" />
-                        <ComboBox SelectedValue="{Binding ThemeMode, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Content" Width="100" HorizontalAlignment="Right" Padding="8,4" Background="{DynamicResource BrushSurface}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1">
+                        <ComboBox SelectedValue="{Binding ThemeMode, UpdateSourceTrigger=PropertyChanged}" 
+                                  SelectedValuePath="Content" 
+                                  Width="120" 
+                                  HorizontalAlignment="Right">
                             <ComboBoxItem Content="light" />
                             <ComboBoxItem Content="dark" />
                         </ComboBox>
@@ -112,10 +115,6 @@
                                   IsEditable="True"
                                   Width="220"
                                   HorizontalAlignment="Right"
-                                  Padding="8,4"
-                                  Background="{DynamicResource BrushSurface}"
-                                  BorderBrush="{DynamicResource BrushBorder}"
-                                  BorderThickness="1"
                                   ToolTip="Select the saved profile set Lumos should use during the scheduled window." />
                     </Grid>
 
@@ -129,22 +128,12 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Start time" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
                             <TextBox Text="{Binding ScheduledProfileStartTime, UpdateSourceTrigger=PropertyChanged}"
-                                     Padding="8,4"
-                                     Background="{DynamicResource BrushSurface}"
-                                     Foreground="{DynamicResource BrushTextPrimary}"
-                                     BorderBrush="{DynamicResource BrushBorder}"
-                                     BorderThickness="1"
                                      ToolTip="Daily start time in 24-hour format, for example 06:00." />
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="End time" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6" />
                             <TextBox Text="{Binding ScheduledProfileEndTime, UpdateSourceTrigger=PropertyChanged}"
-                                     Padding="8,4"
-                                     Background="{DynamicResource BrushSurface}"
-                                     Foreground="{DynamicResource BrushTextPrimary}"
-                                     BorderBrush="{DynamicResource BrushBorder}"
-                                     BorderThickness="1"
                                      ToolTip="Daily end time in 24-hour format, for example 19:00. Overnight ranges like 19:00 to 06:00 are supported." />
                         </StackPanel>
                     </Grid>
@@ -188,7 +177,10 @@
                                 <TextBlock Text="?" TextAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextSecondary}" />
                             </Border>
                         </StackPanel>
-                        <TextBox Text="{Binding SmallDifferenceThreshold, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="8,4" HorizontalAlignment="Right" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" />
+                        <TextBox Text="{Binding SmallDifferenceThreshold, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="70" 
+                                 HorizontalAlignment="Right" 
+                                 TextAlignment="Center" />
                     </Grid>
                     
                     <Grid ToolTipService.InitialShowDelay="150"
@@ -204,7 +196,10 @@
                                 <TextBlock Text="?" TextAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource BrushTextSecondary}" />
                             </Border>
                         </StackPanel>
-                        <TextBox Text="{Binding ManualChangeRestoreCooldownSeconds, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="8,4" HorizontalAlignment="Right" Background="{DynamicResource BrushSurface}" Foreground="{DynamicResource BrushTextPrimary}" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" />
+                        <TextBox Text="{Binding ManualChangeRestoreCooldownSeconds, UpdateSourceTrigger=PropertyChanged}" 
+                                 Width="70" 
+                                 HorizontalAlignment="Right" 
+                                 TextAlignment="Center" />
                     </Grid>
                 </StackPanel>
             </Border>

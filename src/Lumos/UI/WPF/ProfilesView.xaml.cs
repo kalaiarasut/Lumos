@@ -31,4 +31,12 @@ public partial class ProfilesView : System.Windows.Controls.UserControl
         e.Handled = true;
     }
 
+    private void OpenInstalledAppsComboBox(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (InstalledAppsComboBox.IsKeyboardFocusWithin || e is MouseButtonEventArgs)
+        {
+            InstalledAppsComboBox.IsDropDownOpen = true;
+        }
+    }
+
 }
