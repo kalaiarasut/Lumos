@@ -144,13 +144,53 @@
                 <StackPanel Grid.Row="0" Grid.ColumnSpan="4" Margin="0,0,0,14">
                     <TextBlock Text="Browse installed apps" FontSize="12" Foreground="{DynamicResource BrushTextSecondary}" Margin="0,0,0,6"
                                ToolTip="Optional. Pick an installed app to prefill the manual fields below, then adjust the name or executable if needed." />
-                    <ComboBox ItemsSource="{Binding InstalledApps}"
+                    <ComboBox ItemsSource="{Binding FilteredInstalledApps}"
                               SelectedItem="{Binding SelectedInstalledApp, UpdateSourceTrigger=PropertyChanged}"
-                              DisplayMemberPath="DisplayText"
+                              Text="{Binding InstalledAppSearchText, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              IsTextSearchEnabled="False"
+                              StaysOpenOnEdit="True"
+                              Style="{x:Null}"
                               MaxDropDownHeight="280"
                               Padding="10,8"
                               FontSize="14"
-                              ToolTip="Select an installed application. Lumos uses its executable name, such as chrome.exe, to match the active app." />
+                              Background="{DynamicResource BrushSurface}"
+                              Foreground="{DynamicResource BrushTextPrimary}"
+                              BorderBrush="{DynamicResource BrushBorder}"
+                              BorderThickness="1"
+                              ToolTip="Type to search installed apps, or pick one from the list. Lumos uses its executable name, such as chrome.exe, to match the active app.">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="2,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="28"
+                                            Height="28"
+                                            CornerRadius="7"
+                                            Background="{DynamicResource BrushSurface}"
+                                            BorderBrush="{DynamicResource BrushBorder}"
+                                            BorderThickness="1"
+                                            VerticalAlignment="Center">
+                                        <Image Source="{Binding ExeName, Converter={StaticResource ExeIconConverter}}"
+                                               Width="20"
+                                               Height="20"
+                                               Stretch="Uniform" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource BrushTextPrimary}" />
+                                        <TextBlock Text="{Binding ExeName}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource BrushTextSecondary}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">

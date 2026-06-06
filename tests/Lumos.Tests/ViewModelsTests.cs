@@ -93,6 +93,25 @@ public class ViewModelsTests
     }
 
     [Fact]
+    public async Task ProfilesViewModel_InstalledAppSearchText_FiltersInstalledApps()
+    {
+        var store = new InMemoryProfileStore(AppSettings.CreateDefault(), []);
+        var provider = new FakeBrightnessProvider(100);
+        var vm = new ProfilesViewModel(store, provider, () =>
+        [
+            new InstalledAppOption { DisplayName = "Google Chrome", ExeName = "chrome.exe" },
+            new InstalledAppOption { DisplayName = "Visual Studio Code", ExeName = "Code.exe" },
+        ]);
+
+        await vm.LoadAsync();
+        vm.InstalledAppSearchText = "code";
+
+        var filtered = vm.FilteredInstalledApps.Cast<InstalledAppOption>().ToList();
+        Assert.Single(filtered);
+        Assert.Equal("Code.exe", filtered[0].ExeName);
+    }
+
+    [Fact]
     public void AppProfileViewModel_BrightnessText_CommitsTypedNumber()
     {
         var vm = new AppProfileViewModel(new AppProfile

@@ -17,6 +17,20 @@ public class ProfilesViewModel : ObservableObject
     public ObservableCollection<AppProfileViewModel> Profiles { get; } = new();
     public ObservableCollection<ProfileSet> ProfileSets { get; } = new();
     public ObservableCollection<InstalledAppOption> InstalledApps { get; } = new();
+    public ObservableCollection<InstalledAppOption> FilteredInstalledApps { get; } = new();
+
+    private string _installedAppSearchText = "";
+    public string InstalledAppSearchText
+    {
+        get => _installedAppSearchText;
+        set
+        {
+            if (SetProperty(ref _installedAppSearchText, value ?? ""))
+            {
+                RefreshInstalledAppFilter();
+            }
+        }
+    }
 
     private InstalledAppOption? _selectedInstalledApp;
     public InstalledAppOption? SelectedInstalledApp
@@ -28,6 +42,7 @@ public class ProfilesViewModel : ObservableObject
             {
                 NewDisplayName = value.DisplayName;
                 NewExeName = value.ExeName;
+                InstalledAppSearchText = value.DisplayText;
             }
         }
     }
@@ -162,6 +177,7 @@ public class ProfilesViewModel : ObservableObject
         {
             InstalledApps.Add(app);
         }
+        RefreshInstalledAppFilter();
 
         SelectedProfileSet = ProfileSets.FirstOrDefault();
     }
@@ -239,6 +255,7 @@ public class ProfilesViewModel : ObservableObject
         Profiles.Add(profile);
         SelectedProfile = profile;
         SelectedInstalledApp = null;
+        InstalledAppSearchText = "";
         NewDisplayName = "";
         NewExeName = "";
         NewBrightness = 50;
@@ -266,5 +283,27 @@ public class ProfilesViewModel : ObservableObject
 
         _newBrightnessText = text;
         OnPropertyChanged(nameof(NewBrightnessText));
+    }
+
+    private void RefreshInstalledAppFilter()
+    {
+        FilteredInstalledApps.Clear();
+        foreach (var app in InstalledApps.Where(MatchesInstalledAppSearch))
+        {
+            FilteredInstalledApps.Add(app);
+        }
+    }
+
+    private bool MatchesInstalledAppSearch(InstalledAppOption app)
+    {
+        var search = InstalledAppSearchText.Trim();
+        if (search.Length == 0)
+        {
+            return true;
+        }
+
+        return app.DisplayName.Contains(search, StringComparison.OrdinalIgnoreCase)
+            || app.ExeName.Contains(search, StringComparison.OrdinalIgnoreCase)
+            || app.DisplayText.Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 }
