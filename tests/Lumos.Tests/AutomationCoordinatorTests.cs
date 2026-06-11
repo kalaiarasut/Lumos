@@ -50,6 +50,56 @@ public sealed class AutomationCoordinatorTests
     }
 
     [Fact]
+    public async Task StartupSeedsRunningAppsWithCurrentBrightness()
+    {
+        var brightness = new FakeBrightnessProvider(42);
+        var profiles = new InMemoryProfileStore(
+            AppSettings.CreateDefault(),
+            [
+                new AppProfile
+                {
+                    ExeName = "chrome.exe",
+                    DisplayName = "Chrome",
+                    Brightness = 10,
+                    Excluded = false,
+                    LastUpdatedUtc = DateTimeOffset.UtcNow,
+                }
+            ]);
+        var activeWindow = new FakeActiveWindowService("chrome.exe")
+        {
+            RunningExecutableNames = ["chrome.exe", "code.exe", "Lumos.exe"],
+        };
+        var coordinator = new AutomationCoordinator(activeWindow, brightness, profiles, new FakeClock(), new FakeLoggingService());
+
+        await coordinator.SeedRunningAppsWithCurrentBrightnessAsync();
+
+        Assert.Equal((byte)42, profiles.Profiles.Single(profile => profile.ExeName == "chrome.exe").Brightness);
+        Assert.Equal((byte)42, profiles.Profiles.Single(profile => profile.ExeName == "code.exe").Brightness);
+        Assert.DoesNotContain(profiles.Profiles, profile => profile.ExeName == "Lumos.exe");
+    }
+
+    [Fact]
+    public async Task ManualBrightnessAfterStartupUpdatesOnlyForegroundApp()
+    {
+        var brightness = new FakeBrightnessProvider(40);
+        var profiles = new InMemoryProfileStore(AppSettings.CreateDefault(), []);
+        var activeWindow = new FakeActiveWindowService("chrome.exe")
+        {
+            RunningExecutableNames = ["chrome.exe", "code.exe"],
+        };
+        var clock = new FakeClock();
+        var coordinator = new AutomationCoordinator(activeWindow, brightness, profiles, clock, new FakeLoggingService());
+
+        await coordinator.SeedRunningAppsWithCurrentBrightnessAsync();
+        await coordinator.RecordObservedBrightnessAsync(55);
+        clock.UtcNow = clock.UtcNow.AddSeconds(2);
+        await coordinator.FlushPendingLearningAsync();
+
+        Assert.Equal((byte)55, profiles.Profiles.Single(profile => profile.ExeName == "chrome.exe").Brightness);
+        Assert.Equal((byte)40, profiles.Profiles.Single(profile => profile.ExeName == "code.exe").Brightness);
+    }
+
+    [Fact]
     public async Task DoesNotRestoreOrLearnForLumosWindow()
     {
         var brightness = new FakeBrightnessProvider(40);

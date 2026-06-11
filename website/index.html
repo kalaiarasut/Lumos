@@ -59,7 +59,7 @@
         <div class="hero__text">
           <div class="hero__badge">
             <span class="hero__badge-dot"></span>
-            Version 0.3.6 — Now Available
+            Version 0.3.7 — Now Available
           </div>
 
           <h1 class="hero__title">
@@ -134,24 +134,24 @@
           How It Works
         </div>
         <h2 class="section__title">Three steps. Zero configuration.</h2>
-        <p class="section__desc">Lumos runs silently in your system tray. It observes, learns, and adapts — all without interrupting your workflow.</p>
+        <p class="section__desc">Lumos starts by mapping your current brightness to the apps already running, then quietly learns only from the app you are actively using.</p>
       </div>
 
       <div class="steps">
         <div class="step reveal reveal-delay-1">
           <div class="step__number">1</div>
-          <h3 class="step__title">Switch apps normally</h3>
-          <p class="step__desc">Lumos watches which application is in the foreground every 300ms using lightweight Windows APIs.</p>
+          <h3 class="step__title">Launch and keep working</h3>
+          <p class="step__desc">When Lumos opens, it saves your current brightness for the apps already running, so old saved values do not immediately override your session.</p>
         </div>
         <div class="step reveal reveal-delay-2">
           <div class="step__number">2</div>
-          <h3 class="step__title">Adjust brightness once</h3>
-          <p class="step__desc">Change your display brightness to whatever feels right. Lumos detects the change and remembers it for that specific app.</p>
+          <h3 class="step__title">Adjust the active app</h3>
+          <p class="step__desc">Change your display brightness while using an app. Lumos detects the change and updates only that foreground app's profile.</p>
         </div>
         <div class="step reveal reveal-delay-3">
           <div class="step__number">3</div>
           <h3 class="step__title">It just works, forever</h3>
-          <p class="step__desc">Next time you return to that app, Lumos smoothly transitions to your saved brightness level. Automatically.</p>
+          <p class="step__desc">Next time you return to that app, Lumos smoothly restores its saved brightness level. Other running app profiles stay untouched.</p>
         </div>
       </div>
     </div>
@@ -255,7 +255,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           </div>
           <h3 class="feature-card__title">Per-App Memory</h3>
-          <p class="feature-card__desc">Brightness profiles are keyed by executable name. Chrome gets 25%, VS Code gets 45%, VLC gets 15% — learned once, applied forever.</p>
+          <p class="feature-card__desc">Brightness profiles are keyed by executable name. On startup, currently running apps inherit the current brightness; after that, each app adapts independently.</p>
         </div>
 
         <div class="feature-card reveal reveal-delay-2">
@@ -263,7 +263,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           </div>
           <h3 class="feature-card__title">Automatic Learning</h3>
-          <p class="feature-card__desc">Change your brightness manually and Lumos detects it, debounces it, and saves it to the current app's profile automatically.</p>
+          <p class="feature-card__desc">Change your brightness manually and Lumos detects it, debounces it, and saves it to the active foreground app's profile automatically.</p>
         </div>
 
         <div class="feature-card reveal reveal-delay-3">
@@ -427,15 +427,15 @@
         <div class="download__card reveal">
           <div class="download__version">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            v0.3.6
+            v0.3.7
           </div>
 
-          <a href="https://github.com/kalaiarasut/Lumos/releases/download/v0.3.6/LumosSetup-0.3.6.exe" target="_blank" rel="noopener noreferrer" class="btn btn--primary" id="download-btn" style="margin-bottom: 0;" download>
+          <a href="https://github.com/kalaiarasut/Lumos/releases/download/v0.3.7/LumosSetup-0.3.7.exe" target="_blank" rel="noopener noreferrer" class="btn btn--primary" id="download-btn" style="margin-bottom: 0;" download>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Download LumosSetup-0.3.6.exe</span>
+            <span>Download LumosSetup-0.3.7.exe</span>
           </a>
 
-          <p class="download__filename">LumosSetup-0.3.6.exe · Windows x64</p>
+          <p class="download__filename">LumosSetup-0.3.7.exe · Windows x64</p>
 
           <div class="download__meta">
             <div class="download__meta-item">

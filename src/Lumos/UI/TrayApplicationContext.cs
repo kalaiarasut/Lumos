@@ -85,17 +85,15 @@ public sealed class TrayApplicationContext : ApplicationContext
 
         _foregroundTimer = new System.Windows.Forms.Timer { Interval = 300 };
         _foregroundTimer.Tick += async (_, _) => await OnForegroundTickAsync();
-        _foregroundTimer.Start();
 
         _brightnessTimer = new System.Windows.Forms.Timer { Interval = 500 };
         _brightnessTimer.Tick += async (_, _) => await OnBrightnessTickAsync();
-        _brightnessTimer.Start();
 
         _shutdownTimer = new System.Windows.Forms.Timer { Interval = 500 };
         _shutdownTimer.Tick += (_, _) => OnShutdownTick();
         _shutdownTimer.Start();
 
-        _ = InitializeMenuStateAsync();
+        _ = InitializeAutomationAsync();
     }
 
     private ContextMenuStrip BuildMenu()
@@ -124,17 +122,26 @@ public sealed class TrayApplicationContext : ApplicationContext
         return menu;
     }
 
-    private async Task InitializeMenuStateAsync()
+    private async Task InitializeAutomationAsync()
     {
         try
         {
             var settings = await _profileStore.LoadSettingsAsync();
             _automationMenuItem.Checked = settings.AutomationEnabled;
             UpdateStatus(settings);
+            if (_coordinator is not null)
+            {
+                await _coordinator.SeedRunningAppsWithCurrentBrightnessAsync();
+            }
         }
         catch (Exception ex)
         {
-            _loggingService.Error("Failed to initialize tray menu state.", ex);
+            _loggingService.Error("Failed to initialize automation.", ex);
+        }
+        finally
+        {
+            _foregroundTimer.Start();
+            _brightnessTimer.Start();
         }
     }
 

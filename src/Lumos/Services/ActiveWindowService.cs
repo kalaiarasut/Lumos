@@ -38,6 +38,40 @@ public sealed partial class ActiveWindowService : IActiveWindowService
         }
     }
 
+    public IReadOnlyCollection<string> GetRunningExecutableNames()
+    {
+        var executableNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var process in Process.GetProcesses())
+        {
+            using (process)
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(process.ProcessName))
+                    {
+                        continue;
+                    }
+
+                    var exeName = process.ProcessName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+                        ? process.ProcessName
+                        : process.ProcessName + ".exe";
+
+                    if (!IsIgnoredExecutable(exeName))
+                    {
+                        executableNames.Add(exeName);
+                    }
+                }
+                catch
+                {
+                    // Some protected/system processes can disappear or deny access while enumerating.
+                }
+            }
+        }
+
+        return executableNames;
+    }
+
     public static bool IsIgnoredExecutable(string exeName) => IgnoredExecutables.Contains(exeName);
 
     [LibraryImport("user32.dll")]

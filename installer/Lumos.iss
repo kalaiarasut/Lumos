@@ -1,5 +1,5 @@
 #define MyAppName "Lumos"
-#define MyAppVersion "0.3.6"
+#define MyAppVersion "0.3.7"
 #define MyAppPublisher "Lumos"
 #define MyAppExeName "Lumos.exe"
 #define MyAppId "B559AE28-D7A5-4E7F-A409-ED329E0880BB"

@@ -21,6 +21,7 @@ public sealed class AutomationCoordinator : IDisposable
     private DateTimeOffset? _suppressUntilUtc;
     private DateTimeOffset? _manualRestoreCooldownUntilUtc;
     private CancellationTokenSource? _restoreCancellation;
+    private bool _hasSeededStartupProfiles;
 
     public AutomationCoordinator(
         IActiveWindowService activeWindowService,
@@ -39,6 +40,62 @@ public sealed class AutomationCoordinator : IDisposable
     }
 
     public TransitionService? TransitionService { get; }
+
+    public async Task SeedRunningAppsWithCurrentBrightnessAsync(CancellationToken cancellationToken = default)
+    {
+        if (_hasSeededStartupProfiles)
+        {
+            return;
+        }
+
+        _hasSeededStartupProfiles = true;
+
+        var settings = await _profileStore.LoadSettingsAsync(cancellationToken);
+        if (IsAutomationInactive(settings))
+        {
+            return;
+        }
+
+        var runningExecutables = _activeWindowService.GetRunningExecutableNames()
+            .Where(exeName =>
+                !string.IsNullOrWhiteSpace(exeName) &&
+                !ActiveWindowService.IsIgnoredExecutable(exeName) &&
+                !settings.ExcludedExecutables.Contains(exeName, StringComparer.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (runningExecutables.Count == 0)
+        {
+            return;
+        }
+
+        var currentBrightness = await _brightnessProvider.GetCurrentBrightnessAsync(cancellationToken);
+        var profiles = await _profileStore.LoadProfilesAsync(cancellationToken);
+
+        foreach (var exeName in runningExecutables)
+        {
+            var existing = profiles.FirstOrDefault(profile => string.Equals(profile.ExeName, exeName, StringComparison.OrdinalIgnoreCase));
+            if (existing is null)
+            {
+                profiles.Add(new AppProfile
+                {
+                    ExeName = exeName,
+                    DisplayName = Path.GetFileNameWithoutExtension(exeName),
+                    Brightness = currentBrightness,
+                    Excluded = false,
+                    LastUpdatedUtc = _clock.UtcNow,
+                });
+            }
+            else
+            {
+                existing.Brightness = currentBrightness;
+                existing.LastUpdatedUtc = _clock.UtcNow;
+            }
+        }
+
+        await _profileStore.SaveProfilesAsync(profiles, cancellationToken);
+        _loggingService.Info($"Seeded {runningExecutables.Count} running app profiles with startup brightness {currentBrightness}");
+    }
 
     public async Task TickAsync(CancellationToken cancellationToken = default)
     {
